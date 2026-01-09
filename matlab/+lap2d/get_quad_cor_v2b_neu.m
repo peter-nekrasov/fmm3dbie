@@ -25,14 +25,14 @@ function [xmat,nover] = get_quad_cor_v2b_neu(S, targinfo, eps, uv_bndry, patch_i
 
         % allocate(cms(3,npatches),rads(npatches),rad_near(npatches))
 
-    [cms, rads] = get_centroid_rads(npatches,norders,ixyzs,iptype,npts, ... 
+    [cms, rads] = get_centroid_rads(npatches,norders,ixyzs,iptype,npts, ...
        srccoefs);
 
     rad_near = rads*rfac;
 
-    % 
+    %
     % find near quadrature correction interactions
-    % 
+    %
 
     % prinf('entering find near mem',0,0)
     nnz = findnearmem(cms, npatches, rad_near, ndtarg, targs, ntarg);
@@ -51,7 +51,7 @@ function [xmat,nover] = get_quad_cor_v2b_neu(S, targinfo, eps, uv_bndry, patch_i
         uvs_targ = zeros(2,ntarg);
     else
         if ~isempty(patch_id)
-            ipatch_id = patch_id; 
+            ipatch_id = patch_id;
             uvs_targ = uv_bndry;
         else
             ipatch_id = zeros(ntarg,1);
@@ -78,13 +78,13 @@ function [xmat,nover] = get_quad_cor_v2b_neu(S, targinfo, eps, uv_bndry, patch_i
 
     xmat = conv_rsc_to_spmat(S,row_ptr,col_ind,A);
 
-    Q = []; Q.targinfo = targinfo; Q.rfac = rfac; Q.wavenumber = 0; 
+    Q = []; Q.targinfo = targinfo; Q.rfac = rfac; Q.wavenumber = 0;
     Q.row_ptr = row_ptr; Q.col_ind = col_ind; Q.kernel_order = -1;
     novers = get_oversampling_parameters(S,Q,1e2*eps);
     nover = max(novers);
     norderup = nover - S.norders(1);  % assumes that patches are all the same order
 
-    Asmth_over = smooth_sparse_quad(l2d_sprime,targs,S,row_ptr,col_ind,norderup); 
+    Asmth_over = smooth_sparse_quad(l2d_sprime,targs,S,row_ptr,col_ind,norderup);
 
     xmat = xmat - Asmth_over;
 end

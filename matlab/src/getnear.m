@@ -44,7 +44,9 @@ function [rsc] = getnear(S, targinfo, rfac)
 %         iquad(i) is the location in quadrature correction array 
 %         where quadrature for interaction corresponding to
 %         col_ind(i) starts. 
-%         
+%         iquad(i) is the location in quadrature correction array 
+%         where quadrature for interaction corresponding to
+%         col_ind(i) starts
 %      
 %    
 
@@ -113,3 +115,6 @@ function [rsc] = getnear(S, targinfo, rfac)
     rsc.iquad = iquad;
 
 end
+%
+%
+%

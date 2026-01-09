@@ -25,14 +25,14 @@ function [xmat,nover] = get_quad_cor_sub(S, eps)
 
         % allocate(cms(3,npatches),rads(npatches),rad_near(npatches))
 
-    [cms, rads] = get_centroid_rads(npatches,norders,ixyzs,iptype,npts, ... 
+    [cms, rads] = get_centroid_rads(npatches,norders,ixyzs,iptype,npts, ...
        srccoefs);
 
     rad_near = rads*rfac;
 
-    % 
+    %
     % find near quadrature correction interactions
-    % 
+    %
 
     targs = srcvals(1:3,:);
     ntarg = npts;
@@ -78,23 +78,23 @@ function [xmat,nover] = get_quad_cor_sub(S, eps)
 
     istart = 1;
     for i=1:ntarg
-        nrep(i) = sum(npts_col(istarts(i):iends(i))); 
+        nrep(i) = sum(npts_col(istarts(i):iends(i)));
         iinds = horzcat(isrcinds{col_ind(istarts(i):iends(i))});
         nelem = length(iinds);
         icol_ind(istart:istart+nelem-1) = iinds;
         istart = istart+nelem;
     end
-    irow_ind = repelem((1:ntarg)',nrep);    
+    irow_ind = repelem((1:ntarg)',nrep);
     
     xmat = sparse(irow_ind,icol_ind, wnear, ntarg, S.npts);
 
-    Q = []; Q.targinfo = S; Q.rfac = rfac; Q.wavenumber = 0; 
+    Q = []; Q.targinfo = S; Q.rfac = rfac; Q.wavenumber = 0;
     Q.row_ptr = row_ptr; Q.col_ind = col_ind; Q.kernel_order = -1;
     novers = get_oversampling_parameters(S,Q,1e2*eps);
     nover = max(novers);
     norderup = nover - S.norders(1); % assumes that patches are all the same order
 
-    Asmth_over = smooth_sparse_quad(lap2d_kern,targs,S,row_ptr,col_ind,norderup); 
+    Asmth_over = smooth_sparse_quad(lap2d_kern,targs,S,row_ptr,col_ind,norderup);
 
     xmat = xmat - Asmth_over;
 
