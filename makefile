@@ -123,7 +123,9 @@ HOBJS = $(HELM)/helm_comb_dir.o $(HELM)/helm_rpcomb_neu.o \
 
 # Laplace wrappers
 LAP = src/lap_wrappers
-LOBJS = $(LAP)/lap_comb_dir.o $(LAP)/lap_s_neu.o
+LOBJS = $(LAP)/lap_comb_dir.o $(LAP)/lap_s_neu.o \
+        $(LAP)/lap2d_wrappers.o
+
 
 # Maxwell wrappers
 EM = src/maxwell
@@ -143,7 +145,8 @@ STOKOBJS = $(STOK)/stok_comb_vel.o
 # Kernels
 KER = src/kernels
 KOBJS = $(KER)/helm_kernels.o $(KER)/lap_kernels.o $(KER)/DPIE_kernels.o \
-	$(KER)/yuk_kernels.o $(KER)/stok_kernels.o $(KER)/em_kernels.o
+	$(KER)/yuk_kernels.o $(KER)/stok_kernels.o $(KER)/em_kernels.o \
+	$(KER)/hank103.o
 
 # Quadrature wrappers
 QUAD = src/quadratures
