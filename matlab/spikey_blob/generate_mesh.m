@@ -1,3 +1,5 @@
+run('/Users/yuguan/software/chunkie/startup.m')
+run ../startup.m
 %% Get chnkr objects
 
 verts_all = load('geo.mat');
@@ -25,16 +27,16 @@ plot(chnkr,'k-')
 hold on
 quiver(chnkr)
 
-opts = []; opts.mv_bdries = 1;
-[chnkr1,eps] = arcresample(chnkr,opts);
-chnkr1 = refine(chnkr1,struct('maxchunklen',0.02));
-chnkr1 = sort(chnkr1);
-chnkr1.npt 
-
-opts = []; opts.mv_bdries = 1;
-[chnkr2,eps] = arcresampler(chnkr,opts);
-chnkr2 = refine(chnkr2,struct('maxchunklen',0.02));
-chnkr2 = sort(chnkr2);
+% opts = []; opts.mv_bdries = 1;
+% [chnkr1,eps] = arcresample(chnkr,opts);
+% chnkr1 = refine(chnkr1,struct('maxchunklen',0.02));
+% chnkr1 = sort(chnkr1);
+% chnkr1.npt 
+% 
+% opts = []; opts.mv_bdries = 1;
+% [chnkr2,eps] = arcresampler(chnkr,opts);
+% chnkr2 = refine(chnkr2,struct('maxchunklen',0.02));
+% chnkr2 = sort(chnkr2);
 
 % kappa = signed_curvature(chnkr);
 % kappamax = max(abs(kappa)).*(chunklen(chnkr)).';
@@ -46,7 +48,6 @@ chnkr2 = sort(chnkr2);
 % quiver(chnkr)
 % scatter(chnkr.r) 
 
-
 % opts = [];
 % % opts.maxchunklen = 10;
 % % opts.splitchunks = idx;
@@ -54,7 +55,6 @@ chnkr2 = sort(chnkr2);
 % chnkr = refine(chnkr, opts);
 % 
 % chnkr.npt
-
 
 % verts2 = verts_all.verts2;
 % nchs = ones(size(verts2,2),1); 
@@ -67,15 +67,15 @@ chnkr2 = sort(chnkr2);
 % opts.etol = 1E-6;
 % [chnkr2,err] = chnk.smoother.smooth(verts2,opts);
 
-
+%%
 nexttile
-plot(chnkr1,'k-')
+plot(chnkr,'k-')
 hold on
-quiver(chnkr1)
-nexttile
-plot(chnkr2,'k-')
-hold on
-quiver(chnkr2)
+quiver(chnkr)
+% nexttile
+% plot(chnkr2,'k-')
+% hold on
+% quiver(chnkr2)
 % 
 % chnkr = chnkr1;
 % 
@@ -88,23 +88,21 @@ quiver(chnkr2)
 
 k = 16;
 
-rt = chnkr1.r;
+rt = chnkr.r;
 plot(rt(1,:), rt(2,:), 'k.')
 
 x = rt(1,:);
 y = rt(2,:);
 
-
 x = reshape(x,k,[]);
 y = reshape(y,k,[]);
-
 
 [xl,wl,ul,vl] = lege.exps(k);
 ps = lege.pols(-1,k-1);
 vx = ps.'*ul*x;
 vy = ps.'*ul*y;
 
-[rs,~] = chunkends(chnkr1);
+[rs,~] = chunkends(chnkr);
 rv = squeeze(rs(:,1,:));
 %%
 
@@ -115,6 +113,9 @@ gm = fegeometry(tr);
 gm = addVertex(gm,"Coordinates",rv.');
 gm = generateMesh(gm,'GeometricOrder','linear','Hmax',0.03,'Hgrad',1.2);
 
+%%
+figure(2); clf; ax = axes;
+% nexttile 
 pdemesh(gm); hold on;
 msh = gm.Mesh;
 
@@ -156,8 +157,6 @@ xs = zeros(k,size(ff,2));
 ys = zeros(k,size(ff,2));
 iverts = zeros(2,size(ff,2));
 nbedge = size(ff,2);
-
-
 
 strts = zeros(nbedge,1);
 finis = strts;
@@ -213,7 +212,6 @@ for ii=1:(nv)
         icount = icount + 1;
     end
 end
-
 
 %%
 
@@ -287,7 +285,6 @@ for ii=1:nelem
         xx(:,ii) = tran(1,:);
         yy(:,ii) = tran(2,:);
 
-
     else
 
         uvec = v3-v1;
@@ -332,7 +329,6 @@ srcvals(7,:) = srcdxv(:);
 srcvals(8,:) = srcdyv(:);
 srcvals(12,:) = -1;
 
-
 srfr = surfer(nelem,nord,srcvals,1);
 errs = surf_fun_error(srfr,srcvals(4,:));
 
@@ -341,12 +337,12 @@ errs = surf_fun_error(srfr,srcvals(4,:));
 figure(4); 
 plot(srfr,rand(srfr.npatches,1))
 hold on
-plot(chnkr1,'x-')
+plot(chnkr,'x-')
 hold on
-quiver(chnkr1)
+quiver(chnkr)
 view(0,90)
 
-chnkr = chnkr1;
+% chnkr = chnkr1;
 S = srfr;
 
 [~,I] = sort(point_id);

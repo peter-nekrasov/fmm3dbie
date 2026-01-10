@@ -1,0 +1,8 @@
+  rm test1.o 
+  rm int2 
+  gfortran -std=legacy -c -w test1.f 
+  gfortran -std=legacy -O3 -w -o int2 test1.o   \
+    ../../src/common/prini_new.f\
+    ../../src/kernels_2d/biharmonic_kernels.f90
+
+  ./int2 
