@@ -133,6 +133,11 @@ LOBJS = $(LAP)/lap_comb_dir.o $(LAP)/lap_s_neu.o
 LAP2 = src/lap_2d_wrappers
 LOBJS2 = $(LAP2)/lap2d_wrappers.o
 
+# Biharmonic 2D wrappers
+BH2 = src/biharmonic_2d_wrappers
+BHOBJS = $(BH2)/bh2d_wrappers.o
+
+
 # Maxwell wrappers
 EM = src/maxwell
 EMOBJS = $(EM)/em_mfie_pec.o $(EM)/em_aumfie_pec.o \
@@ -196,9 +201,9 @@ SURFSM_MOD_OBJS = $(SURFSM)/Mod_TreeLRD.o \
 # Add to FFLAGS so that modules get compiled in the .mod folder
 FFLAGS += -J .mod/
 
-OBJS = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2)
+OBJS = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(BHOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2)
 
-OBJS_64 = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2)
+OBJS_64 = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(BHOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2)
 OBJS_64 += $(COM)/lapack_wrap_64.o
 
 ifeq ($(BLAS_64),ON)
