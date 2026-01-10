@@ -121,11 +121,17 @@ HOBJS = $(HELM)/helm_comb_dir.o $(HELM)/helm_rpcomb_neu.o \
 	$(HELM)/helm_comb_trans.o $(HELM)/helm_rpcomb_imp.o \
 	$(HELM)/helm_s_neu.o $(HELM)/helm_common_evaluators.o 
 
+# Helmholtz 2D wrappers
+HELM2 = src/helm_2d_wrappers
+HOBJS2 = $(HELM2)/helm2d_wrappers.o
+
 # Laplace wrappers
 LAP = src/lap_wrappers
-LOBJS = $(LAP)/lap_comb_dir.o $(LAP)/lap_s_neu.o \
-        $(LAP)/lap2d_wrappers.o
-
+LOBJS = $(LAP)/lap_comb_dir.o $(LAP)/lap_s_neu.o
+        
+# Laplace 2D wrappers
+LAP2 = src/lap_2d_wrappers
+LOBJS2 = $(LAP2)/lap2d_wrappers.o
 
 # Maxwell wrappers
 EM = src/maxwell
@@ -144,10 +150,11 @@ STOKOBJS = $(STOK)/stok_comb_vel.o
 
 # Kernels
 KER = src/kernels
+KER2 = src/kernels_2d
 KOBJS = $(KER)/helm_kernels.o $(KER)/lap_kernels.o $(KER)/DPIE_kernels.o \
 	$(KER)/yuk_kernels.o $(KER)/stok_kernels.o $(KER)/em_kernels.o \
-	$(KER)/hank103.o src/kernels_2d/biharmonic_kernels.o
-
+	$(KER)/hank103.o src/kernels_2d/biharmonic_kernels.o \
+  $(KER2)/lap_kernels_2d.o
 
 # Quadrature wrappers
 QUAD = src/quadratures
@@ -189,9 +196,9 @@ SURFSM_MOD_OBJS = $(SURFSM)/Mod_TreeLRD.o \
 # Add to FFLAGS so that modules get compiled in the .mod folder
 FFLAGS += -J .mod/
 
-OBJS = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2)
+OBJS = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2)
 
-OBJS_64 = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2)
+OBJS_64 = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2)
 OBJS_64 += $(COM)/lapack_wrap_64.o
 
 ifeq ($(BLAS_64),ON)

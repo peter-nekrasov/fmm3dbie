@@ -31,7 +31,7 @@
 !        row-sparse compressed format
 !
 
-      subroutine getnearquad_lap2d_slp(npatches, norders, &
+      subroutine getnearquad_lap2d_gv2v(npatches, norders, &
        ixyzs, iptype, npts, srccoefs, srcvals, eps, iquadtype, nnz, & 
        row_ptr, col_ind, iquad, rfac0, nquad, wnear)
 !
@@ -125,7 +125,7 @@
       integer ipv
 
       procedure (), pointer :: fker
-      external l2d_slp
+      external l2d_g
 
 
       ndz=0
@@ -148,19 +148,19 @@
         ipatch_id, uvs_targ)
 
       ipv=0
-      fker => l2d_slp 
+      fker => l2d_g 
       call dgetnearquad_ggq_guru(npatches, norders, ixyzs, &
         iptype, npts, srccoefs, srcvals, ndtarg, ntarg, srcvals, &
         ipatch_id, uvs_targ, eps, ipv, fker, ndd, dpars, ndz, zpars, &
         ndi, ipars, nnz, row_ptr, col_ind, iquad, rfac0, nquad, wnear)
 
       return
-      end subroutine getnearquad_lap2d_slp
+      end subroutine getnearquad_lap2d_gv2v
 !
 !
 !
 !
-      subroutine getnearquad_lap2d_slp_eval(npatches, norders, &
+      subroutine getnearquad_lap2d_g(npatches, norders, &
         ixyzs, iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, &
         ipatch_id, uvs_targ, eps, iquadtype, nnz, row_ptr, &
         col_ind, iquad, rfac0, nquad, wnear)
@@ -298,7 +298,7 @@
 
       procedure (), pointer :: fker
 ! replace kernels here
-      external l2d_slp
+      external l2d_g
 
       ndd = 0
       ndz = 0
@@ -308,7 +308,7 @@
       if (iquadtype.eq.1) then
         ipv = 0
 
-        fker => l2d_slp
+        fker => l2d_g
         call dgetnearquad_ggq_guru(npatches, norders, ixyzs, &
           iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, &
           ipatch_id, uvs_targ, eps, ipv, fker, ndd, dpars, ndz, &
@@ -482,7 +482,7 @@
         end
 
 
-      subroutine getnearquad_lap2d_sprime_neu(npatches, norders, &
+      subroutine getnearquad_lap2d_gdn(npatches, norders, &
         ixyzs, iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, &
         ipatch_id, uvs_targ, eps, zpars, iquadtype, nnz, row_ptr, &
         col_ind, iquad, rfac0, nquad, wnear)
@@ -619,8 +619,7 @@
       real *8, allocatable :: wneartmp(:)
   
       procedure (), pointer :: fker
-      external l2d_slp
-      external l2d_sprime
+      external l2d_gdn
 
       ndd = 0
       ndz = 0
@@ -638,7 +637,7 @@
           wneartmp(i) = 0 
         enddo
 !$OMP END PARALLEL DO
-        fker => l2d_sprime
+        fker => l2d_gdn
         call dgetnearquad_ggq_guru(npatches, norders, ixyzs, &
           iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, &
           ipatch_id, uvs_targ, eps, ipv, fker, ndd, dpars, ndz, &
@@ -650,3 +649,9 @@
       return
       end
 !
+
+
+
+
+
+
