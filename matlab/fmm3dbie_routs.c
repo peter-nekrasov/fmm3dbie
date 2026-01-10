@@ -1124,9 +1124,9 @@ mxWrapReturnZDef_single   (mxWrapReturn_single_dcomplex, dcomplex,
 #define MWF77_em_muller_trans_eval_oneside EM_MULLER_TRANS_EVAL_ONESIDE
 #define MWF77_getnearquad_em_muller_trans GETNEARQUAD_EM_MULLER_TRANS
 #define MWF77_em_muller_trans_solver_guru EM_MULLER_TRANS_SOLVER_GURU
-#define MWF77_getnearquad_lap2d_slp GETNEARQUAD_LAP2D_SLP
-#define MWF77_getnearquad_lap2d_sprime_neu GETNEARQUAD_LAP2D_SPRIME_NEU
-#define MWF77_getnearquad_lap2d_slp_eval GETNEARQUAD_LAP2D_SLP_EVAL
+#define MWF77_getnearquad_lap2d_gv2v GETNEARQUAD_LAP2D_GV2V
+#define MWF77_getnearquad_lap2d_gdn GETNEARQUAD_LAP2D_GDN
+#define MWF77_getnearquad_lap2d_g GETNEARQUAD_LAP2D_G
 #define MWF77_get_centroid_rads GET_CENTROID_RADS
 #elif defined(MWF77_UNDERSCORE1)
 #define MWF77_get_ellipsoid_npat_mem get_ellipsoid_npat_mem_
@@ -1172,9 +1172,9 @@ mxWrapReturnZDef_single   (mxWrapReturn_single_dcomplex, dcomplex,
 #define MWF77_em_muller_trans_eval_oneside em_muller_trans_eval_oneside_
 #define MWF77_getnearquad_em_muller_trans getnearquad_em_muller_trans_
 #define MWF77_em_muller_trans_solver_guru em_muller_trans_solver_guru_
-#define MWF77_getnearquad_lap2d_slp getnearquad_lap2d_slp_
-#define MWF77_getnearquad_lap2d_sprime_neu getnearquad_lap2d_sprime_neu_
-#define MWF77_getnearquad_lap2d_slp_eval getnearquad_lap2d_slp_eval_
+#define MWF77_getnearquad_lap2d_gv2v getnearquad_lap2d_gv2v_
+#define MWF77_getnearquad_lap2d_gdn getnearquad_lap2d_gdn_
+#define MWF77_getnearquad_lap2d_g getnearquad_lap2d_g_
 #define MWF77_get_centroid_rads get_centroid_rads_
 #elif defined(MWF77_UNDERSCORE0)
 #define MWF77_get_ellipsoid_npat_mem get_ellipsoid_npat_mem
@@ -1220,9 +1220,9 @@ mxWrapReturnZDef_single   (mxWrapReturn_single_dcomplex, dcomplex,
 #define MWF77_em_muller_trans_eval_oneside em_muller_trans_eval_oneside
 #define MWF77_getnearquad_em_muller_trans getnearquad_em_muller_trans
 #define MWF77_em_muller_trans_solver_guru em_muller_trans_solver_guru
-#define MWF77_getnearquad_lap2d_slp getnearquad_lap2d_slp
-#define MWF77_getnearquad_lap2d_sprime_neu getnearquad_lap2d_sprime_neu
-#define MWF77_getnearquad_lap2d_slp_eval getnearquad_lap2d_slp_eval
+#define MWF77_getnearquad_lap2d_gv2v getnearquad_lap2d_gv2v
+#define MWF77_getnearquad_lap2d_gdn getnearquad_lap2d_gdn
+#define MWF77_getnearquad_lap2d_g getnearquad_lap2d_g
 #define MWF77_get_centroid_rads get_centroid_rads
 #else /* f2c convention */
 #define MWF77_get_ellipsoid_npat_mem get_ellipsoid_npat_mem__
@@ -1268,9 +1268,9 @@ mxWrapReturnZDef_single   (mxWrapReturn_single_dcomplex, dcomplex,
 #define MWF77_em_muller_trans_eval_oneside em_muller_trans_eval_oneside__
 #define MWF77_getnearquad_em_muller_trans getnearquad_em_muller_trans__
 #define MWF77_em_muller_trans_solver_guru em_muller_trans_solver_guru__
-#define MWF77_getnearquad_lap2d_slp getnearquad_lap2d_slp__
-#define MWF77_getnearquad_lap2d_sprime_neu getnearquad_lap2d_sprime_neu__
-#define MWF77_getnearquad_lap2d_slp_eval getnearquad_lap2d_slp_eval__
+#define MWF77_getnearquad_lap2d_gv2v getnearquad_lap2d_gv2v__
+#define MWF77_getnearquad_lap2d_gdn getnearquad_lap2d_gdn__
+#define MWF77_getnearquad_lap2d_g getnearquad_lap2d_g__
 #define MWF77_get_centroid_rads get_centroid_rads__
 #endif
 
@@ -1325,9 +1325,9 @@ MWF77_RETURN MWF77_em_nrccie_pec_solver_guru(int*, int*, int*, int*, int*, doubl
 MWF77_RETURN MWF77_em_muller_trans_eval_oneside(double*, dcomplex*, dcomplex*, int*, double*, double*, int*, double*, int*, dcomplex*, dcomplex*);
 MWF77_RETURN MWF77_getnearquad_em_muller_trans(int*, int*, int*, int*, int*, double*, double*, int*, int*, double*, int*, double*, double*, dcomplex*, int*, int*, int*, int*, int*, double*, int*, dcomplex*);
 MWF77_RETURN MWF77_em_muller_trans_solver_guru(int*, int*, int*, int*, int*, double*, double*, double*, dcomplex*, int*, dcomplex*, int*, int*, int*, int*, int*, dcomplex*, int*, int*, int*, double*, double*, double*, int*, double*, double*, dcomplex*);
-MWF77_RETURN MWF77_getnearquad_lap2d_slp(int*, int*, int*, int*, int*, double*, double*, double*, int*, int*, int*, int*, int*, double*, int*, double*);
-MWF77_RETURN MWF77_getnearquad_lap2d_sprime_neu(int*, int*, int*, int*, int*, double*, double*, int*, int*, double*, int*, double*, double*, dcomplex*, int*, int*, int*, int*, int*, double*, int*, double*);
-MWF77_RETURN MWF77_getnearquad_lap2d_slp_eval(int*, int*, int*, int*, int*, double*, double*, int*, int*, double*, int*, double*, double*, int*, int*, int*, int*, int*, double*, int*, double*);
+MWF77_RETURN MWF77_getnearquad_lap2d_gv2v(int*, int*, int*, int*, int*, double*, double*, double*, int*, int*, int*, int*, int*, double*, int*, double*);
+MWF77_RETURN MWF77_getnearquad_lap2d_gdn(int*, int*, int*, int*, int*, double*, double*, int*, int*, double*, int*, double*, double*, dcomplex*, int*, int*, int*, int*, int*, double*, int*, double*);
+MWF77_RETURN MWF77_getnearquad_lap2d_g(int*, int*, int*, int*, int*, double*, double*, int*, int*, double*, int*, double*, double*, int*, int*, int*, int*, int*, double*, int*, double*);
 MWF77_RETURN MWF77_get_centroid_rads(int*, int*, int*, int*, int*, double*, double*, double*);
 
 #ifdef __cplusplus
@@ -16786,10 +16786,10 @@ mw_err_label:
 }
 
 /* ---- fmm3dbie_routs.mw: 5490 ----
- * getnearquad_lap2d_slp(int[1] npatches, int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9, npts] srccoefs, double[n12, npts] srcvals, double[1] eps, int[1] iquadtype, int[1] nnz, int[ntp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout double[nquad] A);
+ * getnearquad_lap2d_gv2v(int[1] npatches, int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9, npts] srccoefs, double[n12, npts] srcvals, double[1] eps, int[1] iquadtype, int[1] nnz, int[ntp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout double[nquad] A);
  * Also at fmm3dbie_routs.mw: 5811
  */
-static const char* stubids101_ = "getnearquad_lap2d_slp(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i double[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])";
+static const char* stubids101_ = "getnearquad_lap2d_gv2v(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i double[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])";
 
 void mexStub101(int nlhs, mxArray* plhs[],
               int nrhs, const mxArray* prhs[])
@@ -17035,7 +17035,7 @@ void mexStub101(int nlhs, mxArray* plhs[],
         in15_ = NULL;
     if (mexprofrecord_)
         mexprofrecord_[101]++;
-    MWF77_getnearquad_lap2d_slp(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_, in12_, in13_, in14_, in15_);
+    MWF77_getnearquad_lap2d_gv2v(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_, in12_, in13_, in14_, in15_);
     plhs[0] = mxCreateDoubleMatrix(dim33_, 1, mxREAL);
     mxWrapCopy_double(plhs[0], in15_, dim33_);
 
@@ -17057,10 +17057,10 @@ mw_err_label:
 }
 
 /* ---- fmm3dbie_routs.mw: 5671 ----
- * getnearquad_lap2d_sprime_neu(int[1] npatches, int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9, npts] srccoefs, double[n12, npts] srcvals, int[1] ndtarg, int[1] ntarg, double[ndtarg, ntarg] targs, int[ntarg] ipatch_id, double[2, ntarg] uvs_targ, double[1] eps, dcomplex[1] zpars, int[1] iquadtype, int[1] nnz, int[ntargp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout double[nquad] A);
+ * getnearquad_lap2d_gdn(int[1] npatches, int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9, npts] srccoefs, double[n12, npts] srcvals, int[1] ndtarg, int[1] ntarg, double[ndtarg, ntarg] targs, int[ntarg] ipatch_id, double[2, ntarg] uvs_targ, double[1] eps, dcomplex[1] zpars, int[1] iquadtype, int[1] nnz, int[ntargp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout double[nquad] A);
  * Also at fmm3dbie_routs.mw: 5930
  */
-static const char* stubids103_ = "getnearquad_lap2d_sprime_neu(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])";
+static const char* stubids103_ = "getnearquad_lap2d_gdn(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])";
 
 void mexStub103(int nlhs, mxArray* plhs[],
               int nrhs, const mxArray* prhs[])
@@ -17405,7 +17405,7 @@ void mexStub103(int nlhs, mxArray* plhs[],
         in21_ = NULL;
     if (mexprofrecord_)
         mexprofrecord_[103]++;
-    MWF77_getnearquad_lap2d_sprime_neu(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_, in12_, in13_, in14_, in15_, in16_, in17_, in18_, in19_, in20_, in21_);
+    MWF77_getnearquad_lap2d_gdn(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_, in12_, in13_, in14_, in15_, in16_, in17_, in18_, in19_, in20_, in21_);
     plhs[0] = mxCreateDoubleMatrix(dim47_, 1, mxREAL);
     mxWrapCopy_double(plhs[0], in21_, dim47_);
 
@@ -17431,9 +17431,9 @@ mw_err_label:
 }
 
 /* ---- fmm3dbie_routs.mw: 5740 ----
- * getnearquad_lap2d_slp_eval(int[1] npatches, int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9, npts] srccoefs, double[n12, npts] srcvals, int[1] ndtarg, int[1] ntarg, double[ndtarg, ntarg] targs, int[ntarg] ipatch_id, double[2, ntarg] uvs_targ, double[1] eps, int[1] iquadtype, int[1] nnz, int[ntargp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout double[nquad] A);
+ * getnearquad_lap2d_g(int[1] npatches, int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9, npts] srccoefs, double[n12, npts] srcvals, int[1] ndtarg, int[1] ntarg, double[ndtarg, ntarg] targs, int[ntarg] ipatch_id, double[2, ntarg] uvs_targ, double[1] eps, int[1] iquadtype, int[1] nnz, int[ntargp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout double[nquad] A);
  */
-static const char* stubids104_ = "getnearquad_lap2d_slp_eval(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])";
+static const char* stubids104_ = "getnearquad_lap2d_g(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])";
 
 void mexStub104(int nlhs, mxArray* plhs[],
               int nrhs, const mxArray* prhs[])
@@ -17762,7 +17762,7 @@ void mexStub104(int nlhs, mxArray* plhs[],
         in20_ = NULL;
     if (mexprofrecord_)
         mexprofrecord_[104]++;
-    MWF77_getnearquad_lap2d_slp_eval(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_, in12_, in13_, in14_, in15_, in16_, in17_, in18_, in19_, in20_);
+    MWF77_getnearquad_lap2d_g(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_, in12_, in13_, in14_, in15_, in16_, in17_, in18_, in19_, in20_);
     plhs[0] = mxCreateDoubleMatrix(dim45_, 1, mxREAL);
     mxWrapCopy_double(plhs[0], in20_, dim45_);
 
