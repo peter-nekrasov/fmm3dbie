@@ -36,7 +36,7 @@ lhs_11 = -eye(S.npts) + V.*A;
 %% b2v
 
 
-fkern = @(s,t) chnk.helm2d.kern(zk,s,t,'d');
+fkern = @(s,t) chnk.helm2d.kern(zk,s,t,'s');
 lhs_12 = V.*chunkerkernevalmat(chnkr,fkern,S.r(1:2,:));
 
 
@@ -47,15 +47,15 @@ lhs_12 = V.*chunkerkernevalmat(chnkr,fkern,S.r(1:2,:));
 targinfo=[];
 targinfo.r = [chnkr.r(:,:);0*chnkr.r(1,:)];
 targinfo.n = [chnkr.n(:,:);0*chnkr.n(1,:)];
-lhs_21 = helm2d.v2b_dir(zk,S,targinfo,1e-8);
+lhs_21 = helm2d.v2b_neu(zk,S,targinfo,1e-8);
 
 
 
 %% b2b
 
 
-h2d_d = kernel.helm2d('d',zk);
-lhs_22 = -0.5*eye(chnkr.npt)+chunkermat(chnkr,h2d_d); %0.5*eye(n)... -
+h2d_sp = kernel.helm2d('sp',zk);
+lhs_22 = 0.5*eye(chnkr.npt)+chunkermat(chnkr,h2d_sp); %0.5*eye(n)... -
 
 %%
 
@@ -65,7 +65,9 @@ lhs = [lhs_11, lhs_12; lhs_21, lhs_22];
 
 % analytic solution : u = sin(x)sin(y)
 rhs_1 = (-2+zk^2+V(:).').*sin(S.r(1,:)).*sin(S.r(2,:)) ; 
-rhs_2 = sin(chnkr.r(1,:)).*sin(chnkr.r(2,:)); % sin(xs(1,:))
+rhs_2 = cos(chnkr.r(1,:)).*sin(chnkr.r(2,:)).*chnkr.n(1,:) ...
+          + sin(chnkr.r(1,:)).*cos(chnkr.r(2,:)).*chnkr.n(2,:) ; % sin(xs(1,:))
+
 
 rhs = [rhs_1 rhs_2].';
 
@@ -75,7 +77,8 @@ rho = dens(S.npts+1:end);
 
 % fkern_d = kernel('l','d');
 % u = A*mu + chunkerkerneval(chnkr,fkern_d,rho,S.r(1:2,:));
-u = A*mu + chunkerkerneval(chnkr,h2d_d,rho,S.r(1:2,:));
+h2d_s = kernel.helm2d('s',zk);
+u = A*mu + chunkerkerneval(chnkr,h2d_s,rho,S.r(1:2,:));
 
 ref_u = sin(S.r(1,:)).*sin(S.r(2,:));
 err = abs(u - ref_u(:)) / max(abs(u));
