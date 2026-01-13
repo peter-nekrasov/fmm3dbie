@@ -8,3 +8,6 @@ function iquad = get_iquad_rsc(npatches,ixyzs,npts,ntarg,nnz,row_ptr,col_ind)
 end
 
 
+%
+%
+%
