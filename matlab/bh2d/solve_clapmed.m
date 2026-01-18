@@ -32,7 +32,7 @@ zk = 0;
 
 start = tic; 
 A = bh2d.v2v_matgen(S,zk,1e-8);
-v2v = -eye(S.npts) + V.*A;
+v2v = eye(S.npts) + V.*A;
 t1 = toc(start);
 fprintf('%5.2e s : time to assemble v2v matrix\n',t1)
 
@@ -124,7 +124,7 @@ fprintf('%5.2e s : time for dense gmres\n',t1)
 
 ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
 start1 = tic;
-u = v2v*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
+u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
     sol(S.npts+1:end), S.r(1:2,:));
 t2 = toc(start1);
 fprintf('%5.2e s : time for kernel eval (for plotting)\n',t2)
