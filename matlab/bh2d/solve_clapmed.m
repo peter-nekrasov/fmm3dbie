@@ -2,12 +2,12 @@
 % addpath('/Users/squinn/chunkie/')
 % addpath('/Users/squinn/chunkie/chunkie/')
 
-clear 
-clc
-
-run('/Users/yuguan/software/chunkie/startup.m')
-run('/Users/yuguan/Dropbox/fmm3dbie/matlab/startup.m')
-addpath '/Users/yuguan/Dropbox/fmm3dbie/src'
+% clear 
+% clc
+% 
+% run('/Users/yuguan/software/chunkie/startup.m')
+% run('/Users/yuguan/Dropbox/fmm3dbie/matlab/startup.m')
+% addpath '/Users/yuguan/Dropbox/fmm3dbie/src'
 
 S = geometries.disk([],[],[4 4 4],8);
 
@@ -30,14 +30,18 @@ zk = 0;
 
 %% v2v
 
-start = tic; 
-A = bh2d.v2v_matgen(S,zk,1e-8);
-v2v = eye(S.npts) + V.*A;
-t1 = toc(start);
-fprintf('%5.2e s : time to assemble v2v matrix\n',t1)
+% start = tic; 
+% A = bh2d.v2v_matgen(S,zk,1e-8);
+% v2v = eye(S.npts) + V.*A;
+% t1 = toc(start);
+% fprintf('%5.2e s : time to assemble v2v matrix\n',t1)
 
+tic;
+[Av2v_cor,nover] = bh2d.get_quad_cor_sub(S,zk, 1e-12);
+toc;
 
-
+v2v_apply = @(mu) bh2d.apply_v2v(S,zk,mu,Av2v_cor,nover,1e-12);
+lhs_11 = @(mu) mu + V.*v2v_apply(mu);
 
 %% b2v
 
@@ -93,8 +97,10 @@ fprintf('%5.2e s : time to assemble b2b matrix\n',t1)
 
 %% form system matrix
 
-sys = [v2v, b2v; 
-    v2b, b2b];
+% sys = [v2v, b2v; 
+%     v2b, b2b];
+
+sys = @(x) [lhs_11(x(1:S.npts)) + b2v*x(S.npts+1:end); v2b*x(1:S.npts) + b2b*x(S.npts+1:end)];
 
 
 %% form right hand side
@@ -114,7 +120,7 @@ rhs(S.npts+1:end) = rhs_bc;
 %% solve 
 
 start = tic; 
-sol = gmres(sys,rhs,[],1e-12,100); 
+sol = gmres(sys,rhs,[],1e-10,100); 
 t1 = toc(start);
 fprintf('%5.2e s : time for dense gmres\n',t1)    
 
@@ -124,7 +130,7 @@ fprintf('%5.2e s : time for dense gmres\n',t1)
 
 ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
 start1 = tic;
-u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
+u = v2v_apply(sol(1:S.npts))+chunkerkerneval(chnkr, ikern,...
     sol(S.npts+1:end), S.r(1:2,:));
 t2 = toc(start1);
 fprintf('%5.2e s : time for kernel eval (for plotting)\n',t2)
@@ -138,14 +144,9 @@ err = abs(u - ref_u(:)) / max(abs(u));
 %% ploting 
 
 figure(2); clf
-scatter(S.r(1,:),S.r(2,:),8,u); 
+scatter(S.r(1,:),S.r(2,:),8,log10(err)); 
 colorbar
 
-
-
-figure(3); clf
-scatter(S.r(1,:),S.r(2,:),8,ref_u); 
-colorbar
 
 %%
 function val = eval_gauss(targ)

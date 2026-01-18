@@ -19382,6 +19382,7 @@ mw_err_label:
 
 /* ---- fmm3dbie_routs.mw: 6312 ----
  * getnearquad_bh2d_gv2v(int[1] npatches, int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9, npts] srccoefs, double[n12, npts] srcvals, double[1] eps, int[1] iquadtype, int[1] nnz, int[ntp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout double[nquad] A);
+ * Also at fmm3dbie_routs.mw: 6622
  */
 static const char* stubids116_ = "getnearquad_bh2d_gv2v(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i double[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])";
 
@@ -20971,7 +20972,7 @@ void mexFunction(int nlhs, mxArray* plhs[],
         mexPrintf("%d calls to fmm3dbie_routs.mw:5933\n", mexprofrecord_[107]);
         mexPrintf("%d calls to fmm3dbie_routs.mw:6002\n", mexprofrecord_[108]);
         mexPrintf("%d calls to fmm3dbie_routs.mw:6228\n", mexprofrecord_[112]);
-        mexPrintf("%d calls to fmm3dbie_routs.mw:6312\n", mexprofrecord_[116]);
+        mexPrintf("%d calls to fmm3dbie_routs.mw:6312 (fmm3dbie_routs.mw:6622)\n", mexprofrecord_[116]);
         mexPrintf("%d calls to fmm3dbie_routs.mw:6390\n", mexprofrecord_[117]);
         mexPrintf("%d calls to fmm3dbie_routs.mw:6468\n", mexprofrecord_[118]);
         mexPrintf("%d calls to fmm3dbie_routs.mw:6546\n", mexprofrecord_[119]);
@@ -21038,7 +21039,7 @@ void mexFunction(int nlhs, mxArray* plhs[],
         fprintf(logfp, "%d calls to fmm3dbie_routs.mw:5933\n", mexprofrecord_[107]);
         fprintf(logfp, "%d calls to fmm3dbie_routs.mw:6002\n", mexprofrecord_[108]);
         fprintf(logfp, "%d calls to fmm3dbie_routs.mw:6228\n", mexprofrecord_[112]);
-        fprintf(logfp, "%d calls to fmm3dbie_routs.mw:6312\n", mexprofrecord_[116]);
+        fprintf(logfp, "%d calls to fmm3dbie_routs.mw:6312 (fmm3dbie_routs.mw:6622)\n", mexprofrecord_[116]);
         fprintf(logfp, "%d calls to fmm3dbie_routs.mw:6390\n", mexprofrecord_[117]);
         fprintf(logfp, "%d calls to fmm3dbie_routs.mw:6468\n", mexprofrecord_[118]);
         fprintf(logfp, "%d calls to fmm3dbie_routs.mw:6546\n", mexprofrecord_[119]);

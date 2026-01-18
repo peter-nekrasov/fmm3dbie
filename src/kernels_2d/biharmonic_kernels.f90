@@ -56,7 +56,7 @@ subroutine bh2d_gsupp2(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
   integer ipars(ndi)
   real *8 :: dx, dy, r2, rdotn
   real *8 :: val, nu, gsxx, gsxy, gsyy
-  real *8 :: over4pi
+  real *8 :: over4pi, taux, tauy, nx, ny
   data over4pi/0.07957747154594767d0/
   !
   ! returns the second supported plate condition of the 
@@ -76,8 +76,8 @@ subroutine bh2d_gsupp2(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
 
   nu = dpars(1)  
 
-  val = gxx*nx*nx + 2*gxy*nx*ny + gyy*ny*ny 
-     1  nu*(gxx*taux*taux + 2*gxy*taux*tauy + gyy*tauy*tauy)
+  val = gxx*nx*nx + 2*gxy*nx*ny + gyy*ny*ny & 
+      + nu*(gxx*taux*taux + 2*gxy*taux*tauy + gyy*tauy*tauy)
             
   return
 end subroutine bh2d_gsupp2
@@ -89,7 +89,7 @@ subroutine bh2d_gfree1(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
   integer ipars(ndi)
   real *8 :: dx, dy, r2, rdotn
   real *8 :: val, nu, gsxx, gsxy ,gsyy
-  real *8 :: over4pi
+  real *8 :: over4pi, taux, tauy, nx, ny
   data over4pi/0.07957747154594767d0/
   !
   ! returns the first free plate condition of the 
@@ -109,9 +109,16 @@ subroutine bh2d_gfree1(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
 
   nu = dpars(1)
 
-  val = gxx*nx*nx + 2*gxy*nx*ny + gyy*ny*ny
-     1  nu*(gxx*taux*taux + 2*gxy*taux*tauy + gyy*tauy*tauy)
+  val = gxx*nx*nx + 2*gxy*nx*ny + gyy*ny*ny &
+     + nu*(gxx*taux*taux + 2*gxy*taux*tauy + gyy*tauy*tauy)
 
   return
 end subroutine bh2d_gfree1
 
+subroutine bh2d_green_hess(dx,dy,gsxx,gsxy,gsyy)
+  implicit real *8 (a-h,o-z)
+  real *8 gsxx,gsxy,gsyy
+  real *8 dx,dy,dr
+
+  return
+  end subroutine bh2d_green_hess
