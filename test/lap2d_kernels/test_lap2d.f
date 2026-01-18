@@ -12,7 +12,7 @@
       targ(2) = -0.25
       targ(3) = 0
 
-      call l2d_slp(src,12,targ,0,0,0,0,0,0,val)
+      call l2d_g(src,12,targ,0,0,0,0,0,0,val)
 
       open(unit=33,file='print_test_lap2d.txt')
       write(33,'(2x,e22.16)'),val

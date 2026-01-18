@@ -16,8 +16,8 @@
       targ(10) = 0.3d0
       targ(11) = 1.1d0
 
-      call h2d_slp(src,12,targ,0,0,1,zk,0,0,val1)
-      call h2d_sprime(src,12,targ,0,0,1,zk,0,0,val2)
+      call h2d_g(src,12,targ,0,0,1,zk,0,0,val1)
+      call h2d_gdn(src,12,targ,0,0,1,zk,0,0,val2)
       
       open(unit=33,file='print_test_helm2d.txt')
       write(33,'(2x,e22.16)'),val1
