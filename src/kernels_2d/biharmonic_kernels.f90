@@ -115,59 +115,59 @@ end subroutine bh2d_gsupp2
 !
 !
 !
-subroutine bh2d_gfree1(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
-   ndi,ipars,val)
-  implicit real *8 (a-h,o-z)
-  real *8 :: srcinfo(*),targinfo(ndt),dpars(ndd)
-  integer ipars(ndi)
-  real *8 :: dx, dy, r2, rdotn
-  real *8 :: val, nu, gsxx, gsxy ,gsyy
-  real *8 :: over4pi
-  real *8 :: taux, tauy, taux2, tauy2
-  real *8 :: nx, ny, nx2, ny2, nx3, ny3 
-  real *8 :: kappa 
-  data over4pi/0.07957747154594767d0/
-  !
-  ! returns the first free plate condition of the 
-  ! biharmonic volumetric kernel
-  !
+! subroutine bh2d_gfree1(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
+!    ndi,ipars,val)
+!   implicit real *8 (a-h,o-z)
+!   real *8 :: srcinfo(*),targinfo(ndt),dpars(ndd)
+!   integer ipars(ndi)
+!   real *8 :: dx, dy, r2, rdotn
+!   real *8 :: val, nu, gsxx, gsxy ,gsyy
+!   real *8 :: over4pi
+!   real *8 :: taux, tauy, taux2, tauy2
+!   real *8 :: nx, ny, nx2, ny2, nx3, ny3 
+!   real *8 :: kappa 
+!   data over4pi/0.07957747154594767d0/
+!   !
+!   ! returns the first free plate condition of the 
+!   ! biharmonic volumetric kernel
+!   !
 
   
-  dx = targinfo(1) - srcinfo(1)
-  dy = targinfo(2) - srcinfo(2)
+!   dx = targinfo(1) - srcinfo(1)
+!   dy = targinfo(2) - srcinfo(2)
 
 
-  call bh2d_green_hess(dx,dy,gxx,gxy,gyy)
+!   call bh2d_green_hess(dx,dy,gxx,gxy,gyy)
 
-  nx = targinfo(10)
-  ny = targinfo(11)
-  kappa = targinfo(13)
+!   nx = targinfo(10)
+!   ny = targinfo(11)
+!   kappa = targinfo(13)
 
-  nx2 = nx*nx 
-  nx3 = nx*nx2 
+!   nx2 = nx*nx 
+!   nx3 = nx*nx2 
 
-  ny2 = ny*ny 
-  ny3 = ny*ny2 
+!   ny2 = ny*ny 
+!   ny3 = ny*ny2 
 
-  taux = targinfo(4)
-  tauy = targinfo(5)
+!   taux = targinfo(4)
+!   tauy = targinfo(5)
 
-  taux2 = taux*taux 
-  tauy2 = tauy*tauy
+!   taux2 = taux*taux 
+!   tauy2 = tauy*tauy
 
-  nu = dpars(1)
+!   nu = dpars(1)
 
-  call bh2d_green_der23(dx,dy,gsxx,gsxy,gsyy,gsxxx,gsxxy,gsxyy,&
-  gsyyy)
+!   call bh2d_green_der23(dx,dy,gsxx,gsxy,gsyy,gsxxx,gsxxy,gsxyy,&
+!   gsyyy)
 
-  val = nx3*gsxxx + 3*nx2*ny*gsxxy + 3*nx*ny2*gsxyy + ny3*gsyyy + &
-    (2.0d0-nu)*(nx*taux2*gsxxx + (2*nx*taux*tauy + ny*taux2)*gsxxy + &
-    (nx*tauy2 + 2*ny*taux*tauy)*gsxyy +ny*tauy2*gsyyy) + & 
-    (1-nu)*
+!   val = nx3*gsxxx + 3*nx2*ny*gsxxy + 3*nx*ny2*gsxyy + ny3*gsyyy + &
+!     (2.0d0-nu)*(nx*taux2*gsxxx + (2*nx*taux*tauy + ny*taux2)*gsxxy + &
+!     (nx*tauy2 + 2*ny*taux*tauy)*gsxyy +ny*tauy2*gsyyy) + & 
+!     (1-nu)*
 
 
-  return
-end subroutine bh2d_gfree1
+!   return
+! end subroutine bh2d_gfree1
 !
 !
 !
