@@ -1,9 +1,9 @@
-function A = v2b_matgen_clamped(S,zk,targinfo,eps,ipatch_id,uvs_targ)
+function A = v2b_matgen_supp2(S,zk,nu,targinfo,eps,ipatch_id,uvs_targ)
 %
-%  bh2d.v2b_matgen_clamped
+%  bh2d.v2b_matgen_supp2
 %
 %  Syntax
-%   A = bh2d.v2b_matgen_clamped(S,zk,targinfo,zpars,eps)
+%   A = bh2d.v2b_matgen_supp2(S,zk,nu,targinfo,zpars,eps)
 %
 %  Integral representation
 %     pot = \int G_S(r,r') \sigma(r') dA(r')
@@ -52,27 +52,27 @@ function A = v2b_matgen_clamped(S,zk,targinfo,eps,ipatch_id,uvs_targ)
 
     rfac0 = 1.25;
 
-    if nargin < 5
+    if nargin < 6
     ipatch_id = zeros(ntarg,1);
     uvs_targ = zeros(2,ntarg);
     end
 
     iquad = 1:npols:(npts*ntarg+1);
     nquad = iquad(nnzp1)-1;
-    A = zeros(2,nquad);
+    A = zeros(1,nquad);
     zpars = 0;
+    dpars = nu;
+
     
     if abs(zk)<=1e-8 
 
-    mex_id_ = 'getnearquad_bh2d_clamped(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[xx])';
-[A] = fmm3dbie_routs(mex_id_, npatches, norders, ixyzs, iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, ipatch_id, uvs_targ, eps, zpars, iquadtype, nnz, row_ptr, col_ind, iquad, rfac0, nquad, A, 1, npatches, npp1, npatches, 1, n9, npts, n12, npts, 1, 1, ndtarg, ntarg, ntarg, 2, ntarg, 1, 1, 1, 1, ntargp1, nnz, nnzp1, 1, 1, 2, nquad);
+    mex_id_ = 'getnearquad_bh2d_supp2(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])';
+[A] = fmm3dbie_routs(mex_id_, npatches, norders, ixyzs, iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, ipatch_id, uvs_targ, eps, dpars, zpars, iquadtype, nnz, row_ptr, col_ind, iquad, rfac0, nquad, A, 1, npatches, npp1, npatches, 1, n9, npts, n12, npts, 1, 1, ndtarg, ntarg, ntarg, 2, ntarg, 1, 1, 1, 1, 1, ntargp1, nnz, nnzp1, 1, 1, nquad);
 
     end 
 
-    A = reshape(A,[S.npts 2*size(targinfo.r,2)]).';
+    A = reshape(A,[S.npts size(targinfo.r,2)]).';
 end
-%
-%
 %
 %
 %

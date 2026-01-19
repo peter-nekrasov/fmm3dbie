@@ -30,4 +30,8 @@
       val = 0 
       call bh2d_gdn(src,ndt,targ,ndd,dpars,ndz,zk,ndi,ipals,val)
       call prin2_long('val=*',val,1)
+
+      val = 0 
+      call bh2d_gsupp2(src,ndt,targ,ndd,dpars,ndz,zk,ndi,ipars,val)
+      call prin2_long('val=*',val,1)
       end 

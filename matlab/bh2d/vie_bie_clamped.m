@@ -4,10 +4,10 @@
 
 % clear 
 % clc
-% 
-% run('/Users/yuguan/software/chunkie/startup.m')
-% run('/Users/yuguan/Dropbox/fmm3dbie/matlab/startup.m')
-% addpath '/Users/yuguan/Dropbox/fmm3dbie/src'
+
+run('/Users/yuguan/software/chunkie/startup.m')
+run('/Users/yuguan/Dropbox/fmm3dbie/matlab/startup.m')
+addpath '/Users/yuguan/Dropbox/fmm3dbie/src'
 
 S = geometries.disk([],[],[4 4 4],8);
 
@@ -35,6 +35,7 @@ zk = 0;
 % v2v = eye(S.npts) + V.*A;
 % t1 = toc(start);
 % fprintf('%5.2e s : time to assemble v2v matrix\n',t1)
+% v2v_apply = @(x) A*x;
 
 tic;
 [Av2v_cor,nover] = bh2d.get_quad_cor_sub(S,zk, 1e-12);
