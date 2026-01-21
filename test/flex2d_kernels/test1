@@ -1,0 +1,12 @@
+  rm test1.o 
+  rm int2 
+  gfortran -std=legacy -c -w test1.f 
+  gfortran -std=legacy -O3 -w -o int2 test1.o   \
+    ../../src/common/prini_new.f\
+    ../../src/kernels/hankdiff.f\
+    ../../src/kernels/helmdiffgreen.f\
+    ../../src/kernels/hank101.f\
+    ../../src/kernels/hank103.f\
+    ../../src/kernels_2d/flexural_kernels_2d.f90
+
+  ./int2 
