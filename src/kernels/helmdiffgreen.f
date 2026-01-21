@@ -12,11 +12,16 @@
         real *8 dr,r2,r,rm1,rm2,rm3,rm4
         integer nder
         complex *16 d0,d1,d2,d3,ima
-        complex *16 h0,h0x,h0y,zk,zt,zk2,zk3
+        complex *16 h0,h1,h0x,h0y,zk,zt,zk2,zk3
         complex *16 h0xx,h0xy,h0yy
         complex *16 h0xxx,h0xxy,h0xyy,h0yyy
         complex *16 cvals(4,1)
         data ima /(0,1)/
+        real *8 pi, o2p
+
+        done = 1 
+        pi = atan(done)*4 
+        o2p = done/(2*pi)
 
         dr = sqrt(dx**2+dy**2)
 
@@ -39,19 +44,26 @@
 
 
         zt = zk*dr
+        call hank101(zt,h0,h1)
         call hankdiff(zt,1,3,1,cvals)
+
 
         d0 = cvals(1,1)
         d1 = cvals(2,1)
         d2 = cvals(3,1) 
         d3 = cvals(4,1)
 
+
         h0x = zk*dx*d1*rm1
         h0y = zk*dy*d1*rm1
+
+
 
         h0xx = zk*dy2*rm3*d1 + zk2*dx2*rm2*d2 
         h0xy = -zk*dx*dy*rm3*d1 + zk2*dx*dy*rm2*d2 
         h0yy = zk*dx2*rm3*d1 + zk2*dy2*rm2*d2
+
+
 
         h0xxx = (-3*zk*dy2*dx*rm5*d1 + zk2*dx*dy2*rm4*d2  
      1             + 2*zk2*dy2*dx*rm4*d2 + zk3*dx3*rm3*d3) 
@@ -60,14 +72,13 @@
         h0xyy = (-zk*(dx3 - 2*dy2*dx)*rm5*d1 + zk2*dx3*rm4*d2 
      1             - 2*zk2*dy2*dx*rm4*d2 + zk3*dy2*dx*rm3*d3)
         h0yyy = (-3*zk*dx2*dy*rm5*d1 + zk2*dy*dx2*rm4*d2  
-     1             + 2*zk2*dx2*dy*rm4*d2 + zk3*dy3*rm3*d3) 
+     1             + 2*zk2*dx2*dy*rm4*d2 + zk3*dy3*rm3*d3)       
         
-        h0 = ima*h0/4
-
+        h0 = ima*h0/4 + o2p*log(dr)
         h0x = ima*h0x/4
         h0y = ima*h0y/4
 
-        h0xx = ima*h0xx/4
+        h0xx = ima*h0xx/4 
         h0xy = ima*h0xy/4
         h0yy = ima*h0yy/4
 
