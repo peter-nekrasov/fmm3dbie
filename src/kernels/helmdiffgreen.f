@@ -155,7 +155,7 @@ c
           call hank101(zt,h0,h1)
           h0 = ima*h0/4 + o2p*log(dr)
         else 
-          nterms = 14 
+          nterms = 14
           allocate(cf1(nterms),cf2(nterms))
           cf1 = 0
           cf2 = 0

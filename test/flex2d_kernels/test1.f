@@ -7,21 +7,23 @@
       dimension src(2), targ(2) 
         
       call prini(6,13)
-      src(1) = 1.2d0 
-      src(2) = 2.3d0 
 
-      targ(1) = 2d0 
-      targ(2) = 3.5d0 
-      
-
-
-      dx = targ(1)-src(1)
-      dy = targ(2)-src(2)
       
       
 
-      if (1.eq.1) then 
-        zk = (10d0,0)
+      if (1.eq.0) then 
+        src(1) = 1.2d0 
+        src(2) = 2.3d0 
+
+        targ(1) = 2d0 
+        targ(2) = 3.5d0 
+        
+
+
+        dx = targ(1)-src(1)
+        dy = targ(2)-src(2)
+      
+        zk = (0.002d0,0)
 
 c        call helmdiffgreen(zk,dx,dy,h0,h0x,h0y,h0xx,
 c     1      h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
@@ -47,19 +49,21 @@ c     1      h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
 
 
 ccc   test green's function of modified flex2d problem
-      if (1.eq.0) then 
+      if (1.eq.1) then 
 
         src(1) = 1.2d0 
         src(2) = 2.3d0 
 
-        targ(1) = 2.5d0 
+        targ(1) = 2d0 
         targ(2) = 3.5d0 
 
-        zpars(1) = 1
-        zpars(2) = 2
+        zpars(1) = 10
+        zpars(2) = 0.002d0
+
+  
         call modified_flex2d_g(src,2,targ,0,0,0,zpars,0,0,val)
 
-        z = (0.024751196814465d0,  -0.061915622771211d0)
+        z = ( -0.009951069286233d0 , - 0.002244113049259d0)
         call prin2_long('gfunc of modified flex (fortran) = *',val,2)
         call prin2_long('gfunc of modified flex (matlab) = *',z,2)
 

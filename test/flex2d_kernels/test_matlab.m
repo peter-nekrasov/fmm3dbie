@@ -19,11 +19,19 @@ traginfo = [];
 targinfo.r = targ;
 
 
-% zks = [1,2];
+zks = [1,0.002];
 
 % val = chnk.flex2d.kern(zks,srcinfo,targinfo,'s');
-
+% 
 % val
 
-zk = 10;
-val = chnk.flex2d.helmdiffgreen(zk,srcinfo.r,targinfo.r);
+zk1 = 10;
+val1 = chnk.flex2d.helmdiffgreen(zk1,srcinfo.r,targinfo.r);
+
+
+zk2 = 0.002;
+val2 = chnk.flex2d.helmdiffgreen(zk2,srcinfo.r,targinfo.r);
+val1 
+val2
+
+val = 1/(zk1^2-zk2^2)*(val1-val2)
