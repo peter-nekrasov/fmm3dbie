@@ -57,13 +57,13 @@ ccc   test green's function of modified flex2d problem
         targ(1) = 2d0 
         targ(2) = 3.5d0 
 
-        zpars(1) = 10
-        zpars(2) = 0.002d0
+        zpars(1) = 0.553902533227154d0 
+        zpars(2) = (0,0.971170249070211d0)
 
   
         call modified_flex2d_g(src,2,targ,0,0,0,zpars,0,0,val)
 
-        z = ( -0.009951069286233d0 , - 0.002244113049259d0)
+        z = ( -0.013411485960580d0 , + 0.169345037532678d0)
         call prin2_long('gfunc of modified flex (fortran) = *',val,2)
         call prin2_long('gfunc of modified flex (matlab) = *',z,2)
 

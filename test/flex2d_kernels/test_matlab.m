@@ -18,20 +18,27 @@ srcinfo.r = src;
 traginfo = [];
 targinfo.r = targ;
 
+a = 1.1;
+b = 0.7;
+c = 1/pi;
 
-zks = [1,0.002];
+zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
+zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
 
-% val = chnk.flex2d.kern(zks,srcinfo,targinfo,'s');
+
+zks = [zk1,zk2];
+
+val = chnk.flex2d.kern(zks,srcinfo,targinfo,'s');
+
+val
+
+% zk1 = 10;
+% val1 = chnk.flex2d.helmdiffgreen(zk1,srcinfo.r,targinfo.r);
 % 
-% val
-
-zk1 = 10;
-val1 = chnk.flex2d.helmdiffgreen(zk1,srcinfo.r,targinfo.r);
-
-
-zk2 = 0.002;
-val2 = chnk.flex2d.helmdiffgreen(zk2,srcinfo.r,targinfo.r);
-val1 
-val2
-
-val = 1/(zk1^2-zk2^2)*(val1-val2)
+% 
+% zk2 = 0.002;
+% val2 = chnk.flex2d.helmdiffgreen(zk2,srcinfo.r,targinfo.r);
+% val1 
+% val2
+% 
+% val = 1/(zk1^2-zk2^2)*(val1-val2)

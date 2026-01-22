@@ -43,58 +43,100 @@ src = [S.r(1,3600); S.r(2,3600)];
 
 zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
 zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
-
+zk1
+zk2 
 zks = [zk1 zk2];
 
 
 v2v = flex2d.v2v_matgen(S,zks,1e-8);
 f = eval_gauss(S.r);
-figure(1); clf
-scatter(S.r(1,:),S.r(2,:),8,log10(f)); 
-colorbar
+
 
 val = v2v*f;
-val = val(3600)
+ val_quad = val(3600)
 
+%%
+
+% figure(1); clf
+% scatter(S.r(1,:),S.r(2,:),8,log10(abs(val))); 
+% colorbar
+% 
+% figure(2); clf
+% imagesc(abs(v2v)); 
+% colorbar
+
+
+
+%%
 
 
 fun = @(r,th) adap_v2v(r,th,src,zks);
 val_adap = integral2(fun,0,1,0,2*pi)
 
 
-
+rel_err = abs(val_quad-val_adap)/abs(val_adap)
 
 
 function val = eval_gauss(targ)
-
-val = exp( - 20*targ(1,:).^2 - 20*targ(2,:).^2 );
+c1 = 0.1; 
+c2 = 0.2;
+val = exp( - 10*(targ(1,:)-c1).^2 - 10*(targ(2,:)-c2).^2 );
 val = val(:);
 
 end
 
 function val = adap_v2v(r,th,src,zks)
-sz = size(r);    
-r = r(:);
-th = th(:);
+% sz = size(r);    
+% r = r(:);
+% th = th(:);
+% 
+% xs = r.*cos(th);
+% ys = r.*sin(th);
+% 
+% 
+% 
+% 
+% targinfo = [];
+% targinfo.r = [xs; ys];
+% 
+% 
+% f = eval_gauss(targinfo.r);
+% 
+% srcinfo = [];
+% srcinfo.r = [src(1); src(2)];
+% 
+% val = chnk.flex2d.kern(zks,srcinfo,targinfo,'s');
+% val = val(:);
+% val = val.*r.*f;
+% val = reshape(val,sz);
 
-xs = r.*cos(th);
-ys = r.*sin(th);
 
 
+xs = r .* cos(th);
+ys = r .* sin(th);
+
+
+sz = size(xs);
 
 
 targinfo = [];
-targinfo.r = [xs; ys];
+targinfo.r = [xs(:).'; ys(:).'];
 
 
-f = eval_gauss(targinfo.r);
+f = eval_gauss(targinfo.r);   
 
 srcinfo = [];
 srcinfo.r = [src(1); src(2)];
 
-val = chnk.flex2d.kern(zks,srcinfo,targinfo,'s');
-val = val(:);
-val = val.*r.*f;
+
+k = chnk.flex2d.kern(zks,srcinfo,targinfo,'s');
+k = k(:);
+
+
+R = hypot(xs,ys);
+
+val = k .* f .* R(:);
+
 val = reshape(val,sz);
 
 

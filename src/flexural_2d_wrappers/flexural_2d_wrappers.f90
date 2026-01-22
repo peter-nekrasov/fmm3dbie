@@ -95,7 +95,7 @@
 !        pair. 
 !
 !  Output arguments
-!    - wnear: real *8(nquad)
+!    - wnear: complex *16(nquad)
 !        The desired near field quadrature
 !               
 !
@@ -111,7 +111,7 @@
       real *8, intent(in) :: rfac0
       integer, intent(in) :: nquad
       
-      real *8, intent(out) :: wnear(nquad)
+      complex *16, intent(out) :: wnear(nquad)
 
       integer ndtarg, ntarg, ndd, ndz, ndi
       real *8 dpars
@@ -149,7 +149,7 @@
 
       ipv=0
       fker => modified_flex2d_g
-      call dgetnearquad_ggq_guru(npatches, norders, ixyzs, &
+      call zgetnearquad_ggq_guru(npatches, norders, ixyzs, &
         iptype, npts, srccoefs, srcvals, ndtarg, ntarg, srcvals, &
         ipatch_id, uvs_targ, eps, ipv, fker, ndd, dpars, ndz, zpars, &
         ndi, ipars, nnz, row_ptr, col_ind, iquad, rfac0, nquad, wnear)
