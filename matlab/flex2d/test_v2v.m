@@ -18,13 +18,6 @@ cparams.tb = 2*pi + cparams.ta;
 chnkr = chunkerfuncuni(@(t) ellipse(t),nch,cparams);
 chnkr = sort(chnkr);
 
-% figure(1); clf
-% plot(S,rand(S.npatches,1))
-% hold on
-% plot(chnkr,'x-')
-% view(0,90)
-
-% V = eval_gauss(S.r);
 
 
 % modified flexural (a \Delta^2 u - b \Delta u - c u) 
@@ -35,8 +28,6 @@ c = 1/pi;
 
 
 nps = S.npts;
-src = [S.r(1,3600); S.r(2,3600)];
-
 
 
 
@@ -48,38 +39,38 @@ zk2
 zks = [zk1 zk2];
 
 
-v2v = flex2d.v2v_matgen(S,zks,1e-8);
+v2v = flex2d.v2v_matgen(S,zks,1e-12);
 f = eval_gauss(S.r);
 
+% quadrature 
+val_quad = v2v*f;
 
-val = v2v*f;
- val_quad = val(3600)
+
+%% adaptive integration 
+val_adap = zeros(size(val_quad));
+for i=1:numel(val_adap)
+  src = [S.r(1,i); S.r(2,i)];
+  fun = @(r,th) adap_v2v(r,th,src,zks);
+  val_adap(i) = integral2(fun,0,1,0,2*pi,"AbsTol",1e-12,"RelTol",1e-12);
+end
+
+
+rel_err = norm(val_quad-val_adap)/norm(val_adap)
 
 %%
 
-% figure(1); clf
-% scatter(S.r(1,:),S.r(2,:),8,log10(abs(val))); 
-% colorbar
-% 
-% figure(2); clf
-% imagesc(abs(v2v)); 
-% colorbar
 
+figure(2); clf
+scatter(S.r(1,:),S.r(2,:),8,log10(abs(val_quad-val_adap)./abs(val_adap))); 
+colorbar
 
 
 %%
-
-
-fun = @(r,th) adap_v2v(r,th,src,zks);
-val_adap = integral2(fun,0,1,0,2*pi)
-
-
-rel_err = abs(val_quad-val_adap)/abs(val_adap)
 
 
 function val = eval_gauss(targ)
-c1 = 0.1; 
-c2 = 0.2;
+c1 = 0; 
+c2 = 0;
 val = exp( - 10*(targ(1,:)-c1).^2 - 10*(targ(2,:)-c2).^2 );
 val = val(:);
 

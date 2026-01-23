@@ -1,9 +1,9 @@
-function A = v2v_matgen(S, zk, eps)
+function A = slp_matgen(S, zk, eps)
 %
-%  flex2d.v2v_matgen
+%  flex2d.slp_matgen
 %
 %  Syntax
-%   A = flex2d.v2v_matgen(S,zk,eps)
+%   A = flex2d.slp_matgen(S,zk,eps)
 %
 %  Integral representation
 %     pot = (Update representation here)

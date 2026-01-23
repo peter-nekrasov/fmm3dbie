@@ -1,9 +1,9 @@
-function A = v2b_matgen_neu(S,zk,targinfo,eps,ipatch_id,uvs_targ)
+function A = v2b_matgen_dir(S,zk,targinfo,eps,ipatch_id,uvs_targ)
 %
-%  bh2d.v2b_matgen_neu
+%  flex2d.v2b_matgen_dir
 %
 %  Syntax
-%   A = bh2d.v2b_matgen_neu(S,zk,targinfo,zpars,eps)
+%   A = flex2d.v2b_matgen_dir(S,zk,targinfo,zpars,eps)
 %
 %  Integral representation
 %     pot = \int G_S(r,r') \sigma(r') dA(r')
@@ -21,12 +21,6 @@ function A = v2b_matgen_neu(S,zk,targinfo,eps,ipatch_id,uvs_targ)
 %          patch if on-surface (optional)
 %    * eps: precision requested
 %
-
-
-    if abs(zk)>1e-8
-        error('No support for flexural problem')
-    end 
-
     [srcvals,srccoefs,norders,ixyzs,iptype,wts] = extract_arrays(S);
     [n12,npts] = size(srcvals);
     [n9,~] = size(srccoefs);
@@ -59,18 +53,45 @@ function A = v2b_matgen_neu(S,zk,targinfo,eps,ipatch_id,uvs_targ)
 
     iquad = 1:npols:(npts*ntarg+1);
     nquad = iquad(nnzp1)-1;
-    A = zeros(1,nquad);
-    zpars = 0;
-    
-    if abs(zk)<=1e-8 
 
-    mex_id_ = 'getnearquad_bh2d_neu(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])';
+
+    
+    if isscalar(zk)
+        if abs(zk) < 1e-6
+            A = zeros(1,nquad);
+            mex_id_ = 'getnearquad_bh2d_dir(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io double[x])';
 [A] = fmm3dbie_routs(mex_id_, npatches, norders, ixyzs, iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, ipatch_id, uvs_targ, eps, zpars, iquadtype, nnz, row_ptr, col_ind, iquad, rfac0, nquad, A, 1, npatches, npp1, npatches, 1, n9, npts, n12, npts, 1, 1, ndtarg, ntarg, ntarg, 2, ntarg, 1, 1, 1, 1, ntargp1, nnz, nnzp1, 1, 1, nquad);
+
+        else 
+
+            error('No support for flexural problem')
+
+        end
+
+
+    elseif length(zk) == 2
+
+        if any(abs(zk) < 1e-6)
+
+            error('No support for Stokes problem')
+
+        else 
+            
+            zpars = zeros(1,2);
+            zpars(1) = zk(1); 
+            zpars(2) = zk(2); 
+            A = zeros(1,nquad)+1i*zeros(1,nquad);
+        mex_id_ = 'getnearquad_modified_flex2d_dir(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i int[x], i int[x], i double[xx], i int[x], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io dcomplex[x])';
+[A] = fmm3dbie_routs(mex_id_, npatches, norders, ixyzs, iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, ipatch_id, uvs_targ, eps, zpars, iquadtype, nnz, row_ptr, col_ind, iquad, rfac0, nquad, A, 1, npatches, npp1, npatches, 1, n9, npts, n12, npts, 1, 1, ndtarg, ntarg, ntarg, 2, ntarg, 1, 2, 1, 1, ntargp1, nnz, nnzp1, 1, 1, nquad);
+        
+
+        end
 
     end 
 
     A = reshape(A,[S.npts size(targinfo.r,2)]).';
 end
+%
 %
 %
 %

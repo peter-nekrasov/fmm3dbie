@@ -7,6 +7,10 @@ subroutine modified_flex2d_g(src,ndt,targ,ndd,dpars,ndz,zpars,ndi,ipars,val)
   complex *16 :: zpars(2), zk1, zk2 
   complex *16 :: zt1, zt2 
   complex *16 :: g1, g2, h1 
+  complex *16 :: h01,h0x1,h0y1
+  complex *16 :: h02,h0x2,h0y2
+  complex *16 :: h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy
+  complex *16 :: gradx, grady
 
 
   zk1 = zpars(1)
@@ -15,13 +19,49 @@ subroutine modified_flex2d_g(src,ndt,targ,ndd,dpars,ndz,zpars,ndi,ipars,val)
   dx = targ(1)-src(1)
   dy = targ(2)-src(2)
 
-
-
-  call helmdiffgreen_g(zk1,dx,dy,g1)
-  call helmdiffgreen_g(zk2,dx,dy,g2)
+  call helmdiffgreen(zk1,dx,dy,g1,h0x1,h0y1,h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
+  call helmdiffgreen(zk2,dx,dy,g2,h0x2,h0y2,h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
 
   val = (g1-g2)/(zk1*zk1-zk2*zk2)
 
 
-
 end subroutine modified_flex2d_g
+!
+!
+!
+!
+!
+subroutine modified_flex2d_gdn(src,ndt,targ,ndd,dpars,ndz,zpars,ndi,ipars,val)
+  real *8 :: src(*), targ(ndt), dpars(ndd)
+  real *8 :: dr 
+  integer ipars(ndi)
+  real *8 :: dx, dy, r2
+  real *8 :: nx, ny 
+  complex *16 :: val
+  complex *16 :: zpars(2), zk1, zk2 
+  complex *16 :: zt1, zt2 
+  complex *16 :: h01,h0x1,h0y1
+  complex *16 :: h02,h0x2,h0y2
+  complex *16 :: h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy
+  complex *16 :: gradx, grady
+  
+
+  zk1 = zpars(1)
+  zk2 = zpars(2)
+
+  dx = targ(1)-src(1)
+  dy = targ(2)-src(2)
+
+  nx = targ(10)
+  ny = targ(11)
+
+
+  call helmdiffgreen(zk1,dx,dy,h01,h0x1,h0y1,h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
+  call helmdiffgreen(zk2,dx,dy,h02,h0x2,h0y2,h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
+
+  gradx = h0x1-h0x2
+  grady = h0y1-h0y2
+
+  val = (nx*gradx + ny*grady)/(zk1*zk1-zk2*zk2)
+
+end subroutine modified_flex2d_gdn
