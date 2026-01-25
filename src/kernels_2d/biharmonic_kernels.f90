@@ -78,16 +78,10 @@ subroutine bh2d_gsupp2(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
   real *8 :: over4pi
   real *8 :: nx, ny
   data over4pi/0.07957747154594767d0/
-  !
-  ! returns the second supported plate condition of the 
-  ! biharmonic volumetric kernel
-  !
 
   dx = targinfo(1) - srcinfo(1)
   dy = targinfo(2) - srcinfo(2)
 
-  ! call prin2_long('dx=*',dx,1)
-  ! call prin2_long('dy=*',dy,1)
 
   rdotn = dx*targinfo(10) + dy*targinfo(11)
   r2 = dx**2 + dy**2
@@ -102,11 +96,7 @@ subroutine bh2d_gsupp2(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
 
   val = nu*(gsxx + gsyy) + &
     (1.0d0 - nu)*(nx*nx*gsxx + 2*nx*ny*gsxy + ny*ny*gsyy)
-!  val = rdotn*(log(r2)+1)*over4pi/2 
 
-  ! call prin2_long('gsxx=*',gsxx,1)
-  ! call prin2_long('gsxy=*',gsxy,1)
-  ! call prin2_long('gsyy=*',gsyy,1)
             
   return
 end subroutine bh2d_gsupp2

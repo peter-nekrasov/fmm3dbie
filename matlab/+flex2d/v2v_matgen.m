@@ -49,7 +49,13 @@ function A = v2v_matgen(S, zk, eps)
 
         else 
 
-            error('No support for flexural problem')
+            zpars = zeros(1,2);
+            zpars(1) = zk; 
+            zpars(2) = zk*1i; 
+            A = zeros(npts,npts)+1i*zeros(npts,npts);
+            mex_id_ = 'getnearquad_flex2d_gv2v(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io dcomplex[x])';
+[A] = fmm3dbie_routs(mex_id_, npatches, norders, ixyzs, iptype, npts, srccoefs, srcvals, eps, zpars, iquadtype, nnz, row_ptr, col_ind, iquad, rfac0, nquad, A, 1, npatches, npp1, npatches, 1, n9, npts, n12, npts, 1, 2, 1, 1, ntp1, nnz, nnzp1, 1, 1, nquad);
+
 
         end
 
@@ -66,7 +72,7 @@ function A = v2v_matgen(S, zk, eps)
             zpars(1) = zk(1); 
             zpars(2) = zk(2); 
             A = zeros(npts,npts)+1i*zeros(npts,npts);
-        mex_id_ = 'getnearquad_modified_flex2d_gv2v(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io dcomplex[x])';
+        mex_id_ = 'getnearquad_flex2d_gv2v(i int[x], i int[x], i int[x], i int[x], i int[x], i double[xx], i double[xx], i double[x], i dcomplex[x], i int[x], i int[x], i int[x], i int[x], i int[x], i double[x], i int[x], io dcomplex[x])';
 [A] = fmm3dbie_routs(mex_id_, npatches, norders, ixyzs, iptype, npts, srccoefs, srcvals, eps, zpars, iquadtype, nnz, row_ptr, col_ind, iquad, rfac0, nquad, A, 1, npatches, npp1, npatches, 1, n9, npts, n12, npts, 1, 2, 1, 1, ntp1, nnz, nnzp1, 1, 1, nquad);
 
         end
