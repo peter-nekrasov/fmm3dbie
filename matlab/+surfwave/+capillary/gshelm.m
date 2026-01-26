@@ -7,16 +7,12 @@ function [val,grad,hess] = gshelm(rts,ejs,src,targ)
 % outputs are:
 % - val is the value of the Green's function centered at zero and
 %   evaluated at (x,y)
-% - grad(:,:,1) is G_{x}, grad(:,:,2) is G_{y} 
-% - hess(:,:,1) is G_{xx}, hess(:,:,2) is G_{xy}, 
-%   hess(:,:,3) is G_{yy}
 %
 % input:
 %
 % x - x-coordinates array
 % y - y-coordinates array
-% rts - roots of cubic polynomial
-% ejs - residues (see notes)
+% rts - roots of linear polynomial
 %
 
 % src = src.r;
