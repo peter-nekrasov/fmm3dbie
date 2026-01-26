@@ -113,7 +113,7 @@ COMOBJS = $(COM)/hkrand.o $(COM)/dotcross3d.o \
 	$(COM)/sort.o $(COM)/sparse_reps.o $(COM)/get_fmm_thresh.o \
 	$(COM)/common_Maxwell.o \
 	$(COM)/rigidbodies.o $(COM)/polytens.o \
-	$(COM)/chebexps.o $(COM)/gmres_routs.o
+	$(COM)/chebexps.o $(COM)/gmres_routs.o $(COM)/dgecoall_standalone.o
 
 # Helmholtz wrappers
 HELM = src/helm_wrappers
@@ -157,6 +157,14 @@ EMOBJS = $(EM)/em_mfie_pec.o $(EM)/em_aumfie_pec.o \
 STOK = src/stok_wrappers
 STOKOBJS = $(STOK)/stok_comb_vel.o 
 
+# Surface wave wrappers
+SURFWAVE = src/surfwave_wrappers
+SURFWAVEOBJS = $(SURFWAVE)/capillary_gs.o $(SURFWAVE)/capillary_gphi.o \
+	$(SURFWAVE)/capillary_gphi_postproc.o $(SURFWAVE)/capillary_all.o \
+	$(SURFWAVE)/capillary_gs_postproc.o $(SURFWAVE)/capillary_gradgs.o \
+	$(SURFWAVE)/capillary_gradgphi.o $(SURFWAVE)/flexural_all.o \
+	$(SURFWAVE)/flex_gs_postproc.o $(SURFWAVE)/flex_rep_bcs.o
+
 # Kernels
 KER = src/kernels
 KER2 = src/kernels_2d
@@ -165,7 +173,9 @@ KOBJS = $(KER)/helm_kernels.o $(KER)/lap_kernels.o $(KER)/DPIE_kernels.o \
 	$(KER)/hank103.o $(KER)/hank101.o \
 	$(KER)/hankdiff.o $(KER)/helmdiffgreen.o \
 	$(KER2)/biharmonic_kernels.o $(KER2)/lap_kernels_2d.o \
-	$(KER2)/flexural_kernels_2d.o 
+	$(KER2)/flexural_kernels_2d.o \
+	$(KER2)/surfwave_kernels_helm.o $(KER2)/surfwave_kernels_flex.o \
+        $(KER2)/struve102.o $(KER)/vpp.o
 
 # Quadrature wrappers
 QUAD = src/quadratures
@@ -208,9 +218,9 @@ SURFSM_MOD_OBJS = $(SURFSM)/Mod_TreeLRD.o \
 # Add to FFLAGS so that modules get compiled in the .mod folder
 FFLAGS += -J .mod/
 
-OBJS = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(BHOBJS) $(FXOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2)
+OBJS = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(BHOBJS) $(FXOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2) $(SURFWAVEOBJS)
 
-OBJS_64 = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(BHOBJS) $(FXOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2)
+OBJS_64 = $(COMOBJS) $(EMOBJS) $(HOBJS) $(KOBJS) $(LOBJS) $(BHOBJS) $(FXOBJS) $(QOBJS) $(SOBJS) $(TOBJS) $(STOKOBJS) $(QOBJS2) $(LOBJS2) $(HOBJS2) $(SURFWAVEOBJS)
 OBJS_64 += $(COM)/lapack_wrap_64.o
 
 ifeq ($(BLAS_64),ON)
@@ -428,6 +438,9 @@ test-dyn-fmm3dbie-only: DYNAMICLIBFMM3DBIE test/com-dyn test/hwrap-dyn test/tria
 
 test/com: 
 	$(FC) $(FFLAGS) test/common/test_common.f -o test/common/int2-com lib-static/$(STATICLIB) $(LIBS) 
+
+test/vpp: 
+	$(FC) $(FFLAGS) test/vppkern/test_vpp.f90 -o test/vppkern/int2-vpp lib-static/$(STATICLIB) $(LIBS)
 
 test/hwrap:
 	$(FC) $(FFLAGS) test/helm_wrappers/test_helm_wrappers_qg_lp.f -o test/helm_wrappers/int2-helm lib-static/$(STATICLIB) $(LIBS) 
