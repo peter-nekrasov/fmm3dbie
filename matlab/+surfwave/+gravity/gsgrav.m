@@ -1,4 +1,4 @@
-function val = gphihelm(rts,src,targ)
+function [val] = gsgrav(rts,src,targ)
 %
 % computes the green's function for the integro-differential equation 
 % determined by the polynomial:
@@ -7,6 +7,9 @@ function val = gphihelm(rts,src,targ)
 % outputs are:
 % - val is the value of the Green's function centered at zero and
 %   evaluated at (x,y)
+% - grad(:,:,1) is G_{x}, grad(:,:,2) is G_{y} 
+% - hess(:,:,1) is G_{xx}, hess(:,:,2) is G_{xy}, 
+%   hess(:,:,3) is G_{yy}
 %
 % input:
 %
@@ -45,7 +48,8 @@ r = sqrt((xt-xs).^2 + (yt-ys).^2);
 % clear xs ys xt yt
 
 val = 0;
-rts = 1;
+
+rts = 1;   
 rhoj = rts;
 
 if (abs(angle(rhoj)) < rslf) && (abs(rhoj) > rslf)
@@ -59,12 +63,12 @@ if (abs(angle(rhoj)) < rslf) && (abs(rhoj) > rslf)
     
    sk0 = -1i*cr0+1i*h0;
    
-   val = val + rhoj*(-sk0 + 2i*h0);
+   val = val + rhoj^2*(-sk0 + 2i*h0);
 
 end
 
-val = 1/4*val;
-val = val + 1./(r.*(2*pi));
+val = 1/2*val;
 
+val = val + 1./(r.*pi);
 
 end

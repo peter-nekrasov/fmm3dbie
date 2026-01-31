@@ -36,12 +36,12 @@ targ = targinfo.r;
 
 % single layer Gs
 if strcmpi(type,'gs_s')
-  submat = surfwave.gravity.gshelm(rts,ejs,src,targ);
+  submat = surfwave.gravity.gsgrav(rts,ejs,src,targ);
 end
 
 % single layer Gphi
 if strcmpi(type,'gphi_s')
-  submat = surfwave.gravity.gphihelm(rts,ejs,src,targ);
+  submat = surfwave.gravity.gphigrav(rts,ejs,src,targ);
 end
 
 
