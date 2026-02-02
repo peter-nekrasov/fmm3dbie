@@ -1,11 +1,3 @@
-% genpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/chunkie/')
-
-run('/Users/yuguan/software/chunkie/startup.m')
-run('/Users/yuguan/Dropbox/fmm3dbie/matlab/startup.m')
-addpath '/Users/yuguan/Dropbox/fmm3dbie/src'
-
 S = geometries.disk([],[],[4 4 4],8);
 
 % chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));
@@ -28,17 +20,29 @@ zk = pi;
 %% v2v
 
 
-A = helm2d.slp_matgen(S,zk,1e-9);
-lhs_11 = -eye(S.npts) + V.*A;
+% A = helm2d.slp_matgen(S,zk,1e-9);
+% lhs_11 = -eye(S.npts) + V.*A;
+
+tic;
+[v2v_cor,nover] = helm2d.get_quad_cor_sub(S,zk, 1e-8);
+toc;
+
+v2v_apply = @(mu) helm2d.apply_v2v(S,zk,mu,v2v_cor,nover,1e-14);
+lhs_11 = @(mu) -mu + V.*v2v_apply(mu);
 
 
 
 %% b2v
 
+h2d_d = kernel('h','d',zk);
 
-fkern = @(s,t) chnk.helm2d.kern(zk,s,t,'d');
-lhs_12 = V.*chunkerkernevalmat(chnkr,fkern,S.r(1:2,:));
+% lhs_12 = V.*chunkerkernevalmat(chnkr,h2d_d,S.r(1:2,:));
 
+opts = []; opts.corrections = true;
+Ab2v_cor = chunkerkernevalmat(chnkr,h2d_d,S.r(1:2,:),opts);
+
+apply_b2v = @(mu) helm2d.apply_b2v_dir(S,zk,chnkr,mu,Ab2v_cor,1e-12);
+lhs_12 = @(mu) V.*apply_b2v(mu);
 
 
 %% v2b
@@ -47,9 +51,14 @@ lhs_12 = V.*chunkerkernevalmat(chnkr,fkern,S.r(1:2,:));
 targinfo=[];
 targinfo.r = [chnkr.r(:,:);0*chnkr.r(1,:)];
 targinfo.n = [chnkr.n(:,:);0*chnkr.n(1,:)];
-lhs_21 = helm2d.v2b_dir(zk,S,targinfo,1e-8);
+% lhs_21 = helm2d.v2b_dir(zk,S,targinfo,1e-8);
 
+tic;
+[Av2b_cor,nover] = helm2d.get_quad_cor_v2b_dir(S, zk,targinfo, 1e-8);
+toc;
 
+v2b_apply = @(mu) helm2d.apply_v2b_dir(S,zk,targinfo,mu,Av2b_cor,nover,1e-14);
+lhs_21 = @(mu) v2b_apply(mu);
 
 %% b2b
 
@@ -59,8 +68,8 @@ lhs_22 = -0.5*eye(chnkr.npt)+chunkermat(chnkr,h2d_d); %0.5*eye(n)... -
 
 %%
 
-lhs = [lhs_11, lhs_12; lhs_21, lhs_22];
-% lhs = @(x) [lhs_11(x(1:S.npts)) + lhs_12(x(S.npts+1:end)); lhs_21(x(1:S.npts)) + lhs_22*x(S.npts+1:end)];
+% lhs = [lhs_11, lhs_12; lhs_21, lhs_22];
+lhs = @(x) [lhs_11(x(1:S.npts)) + lhs_12(x(S.npts+1:end)); lhs_21(x(1:S.npts)) + lhs_22*x(S.npts+1:end)];
 
 
 % analytic solution : u = sin(x)sin(y)
@@ -69,13 +78,14 @@ rhs_2 = sin(chnkr.r(1,:)).*sin(chnkr.r(2,:)); % sin(xs(1,:))
 
 rhs = [rhs_1 rhs_2].';
 
-dens = lhs\rhs;
+% dens = lhs\rhs;
+dens = gmres(lhs,rhs,[],1e-12,2000);
 mu = dens(1:S.npts);
 rho = dens(S.npts+1:end);
 
 % fkern_d = kernel('l','d');
 % u = A*mu + chunkerkerneval(chnkr,fkern_d,rho,S.r(1:2,:));
-u = A*mu + chunkerkerneval(chnkr,h2d_d,rho,S.r(1:2,:));
+u = v2v_apply(mu) + chunkerkerneval(chnkr,h2d_d,rho,S.r(1:2,:));
 
 ref_u = sin(S.r(1,:)).*sin(S.r(2,:));
 err = abs(u - ref_u(:)) / max(abs(u));

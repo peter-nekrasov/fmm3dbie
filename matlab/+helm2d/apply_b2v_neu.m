@@ -1,4 +1,4 @@
-function val = apply_b2v_neu(S,chnkr,rho,Ab2v_cor,eps)
+function val = apply_b2v_neu(S,zk,chnkr,rho,Ab2v_cor,eps)
     
     % lap2d_s = kernel('l','s');
     % A_native = lap2d_s.eval(S_over,S).*S_over.wts(:).';
@@ -9,8 +9,8 @@ function val = apply_b2v_neu(S,chnkr,rho,Ab2v_cor,eps)
     srcinfo.sources = chnkr.r(:,:);
     srcinfo.charges = rho(:).'.*chnkr.wts(:).';
     targ = S.r(1:2,:);
-    U = lfmm2d(eps,srcinfo,0,targ,1);
-    val = -1/(2*pi)*U.pottarg.';
+    U = hfmm2d(eps,zk,srcinfo,0,targ,1);
+    val = U.pottarg.';
     val = val + Ab2v_cor*rho(:);
     
 end
