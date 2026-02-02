@@ -1,9 +1,9 @@
-function A = v2b_neu(zk,S,targinfo,eps,ipatch_id,uvs_targ)
+function A = v2b_neu(S,zk,targinfo,eps,ipatch_id,uvs_targ)
 %
 %  helm2d.v2b_neu
 %
 %  Syntax
-%   A = helm2d.v2b_neu(zk,S,targinfo,zpars,eps)
+%   A = helm2d.v2b_neu(S,zk,targinfo,zpars,eps)
 %
 %  Integral representation
 %     pot = \int G_S(r,r') \sigma(r') dA(r')

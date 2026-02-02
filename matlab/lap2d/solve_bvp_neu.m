@@ -1,11 +1,3 @@
-% genpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/chunkie/')
-
-run('/Users/yuguan/software/chunkie/startup.m')
-run('/Users/yuguan/Dropbox/fmm3dbie/matlab/startup.m')
-addpath '/Users/yuguan/Dropbox/fmm3dbie/src'
-
 S = geometries.disk([],[],[4 4 4],8);
 
 % chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));

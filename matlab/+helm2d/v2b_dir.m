@@ -1,9 +1,9 @@
-function A = v2b_dir(zk,S,targinfo,eps,ipatch_id,uvs_targ)
+function A = v2b_dir(S,zk,targinfo,eps,ipatch_id,uvs_targ)
 %
 %  helm2d.v2b_dir
 %
 %  Syntax
-%   A = helm2d.v2b_dir(zk,S,targinfo,zpars,eps)
+%   A = helm2d.v2b_dir(S,zk,targinfo,zpars,eps)
 %
 %  Integral representation
 %     pot = \int G_S(r,r') \sigma(r') dA(r')
@@ -61,6 +61,7 @@ function A = v2b_dir(zk,S,targinfo,eps,ipatch_id,uvs_targ)
 [A] = fmm3dbie_routs(mex_id_, npatches, norders, ixyzs, iptype, npts, srccoefs, srcvals, ndtarg, ntarg, targs, ipatch_id, uvs_targ, eps, zpars, iquadtype, nnz, row_ptr, col_ind, iquad, rfac0, nquad, A, 1, npatches, npp1, npatches, 1, n9, npts, n12, npts, 1, 1, ndtarg, ntarg, ntarg, 2, ntarg, 1, 1, 1, 1, ntargp1, nnz, nnzp1, 1, 1, nquad);
 
     A = reshape(A,[S.npts size(targinfo.r,2)]).';
+
 end
 %
 %
