@@ -55,9 +55,22 @@ subroutine flex2d_gdn(src,ndt,targ,ndd,dpars,ndz,zpars,ndi,ipars,val)
   nx = targ(10)
   ny = targ(11)
 
-
   call helmdiffgreen(zk1,dx,dy,h01,h0x1,h0y1,h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
-  call helmdiffgreen(zk2,dx,dy,h02,h0x2,h0y2,h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
+
+  if (abs(zk2).gt.1E-6) then 
+    call helmdiffgreen(zk2,dx,dy,h02,h0x2,h0y2,h0xx,h0xy,h0yy,h0xxx,h0xxy,h0xyy,h0yyy)
+  else 
+    h02 = 0
+    h0x2 = 0 
+    h0y2 = 0 
+    h0xx = 0 
+    h0xy = 0 
+    h0yy = 0 
+    h0xxx = 0 
+    h0xxy = 0 
+    h0xyy = 0 
+    h0yyy = 0
+  endif 
 
   gradx = h0x1-h0x2
   grady = h0y1-h0y2

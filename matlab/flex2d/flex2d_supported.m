@@ -43,8 +43,8 @@ nu = .3;
 zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
 zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
 
-zk=1;
-% zk = [zk1,zk2];
+% zk=1;
+zk = [zk1,zk2];
 
 
 % volume to volume part 
@@ -116,7 +116,7 @@ M2 = chunkermat(chnkr,fkern2, opts2);
 
 c0 = (nu - 1)*(nu + 3)*(2*nu - 1)/(2*(3 - nu));
 
-M(2:2:end,1:2:end) = M(2:2:end,1:2:end) + M2 - c0.*kappa(:).^2.*eye(chnkr.npt) - max(zk.^2)/2*eye(chnkr.npt)*0; % extra term shows up for the general problem
+M(2:2:end,1:2:end) = M(2:2:end,1:2:end) + M2 - c0.*kappa(:).^2.*eye(chnkr.npt) + b/(2*a)*eye(chnkr.npt);
 M = M + 0.5*eye(2*chnkr.npt);
 
 
@@ -133,8 +133,8 @@ lhs = [l11, l12;
     l21, l22];
 
 
-% rhs_vol = (4*a+2*b-c+V(:).').*sin(S.r(1,:)).*sin(S.r(2,:)) ; 
-rhs_vol = (4-zk^2+V(:).').*sin(S.r(1,:)).*sin(S.r(2,:)) ; 
+rhs_vol = (4*a+2*b-c+V(:).').*sin(S.r(1,:)).*sin(S.r(2,:)) ; 
+% rhs_vol = (4-zk^2+V(:).').*sin(S.r(1,:)).*sin(S.r(2,:)) ; 
 rhs_bc = zeros(chnkr.npt*2,1);
 rhs_bc(1:2:end) = sin(chnkr.r(1,:)).*sin(chnkr.r(2,:));
 rhs_bc(2:2:end) = -(1+nu)*sin(chnkr.r(1,:)).*sin(chnkr.r(2,:)) + ...
