@@ -20,17 +20,31 @@ V = eval_gauss(S.r);
 %% v2v
 
 
-A = lap2d.slp_matgen(S,1e-9);
-lhs_11 = -eye(S.npts) + V.*A;
+% A = lap2d.slp_matgen(S,1e-9);
+% lhs_11 = -eye(S.npts) + V.*A;
+
+tic;
+[Av2v_cor,nover] = lap2d.get_quad_cor_sub(S, 1e-12);
+toc;
+
+v2v_apply = @(mu) lap2d.apply_v2v(S,mu,Av2v_cor,nover,1e-12);
+lhs_11 = @(mu) - mu + V.*v2v_apply(mu);
 
 
 
 %% b2v
 
 % fkern = chnk.lap2d.kern;
-fkern = @(s,t) chnk.lap2d.kern(s,t,'d');
-lhs_12 = V.*chunkerkernevalmat(chnkr,fkern,S.r(1:2,:));
+% fkern = @(s,t) chnk.lap2d.kern(s,t,'d');
+% lhs_12 = V.*chunkerkernevalmat(chnkr,fkern,S.r(1:2,:));
 
+l2d_d = kernel('l','d');
+
+opts = []; opts.corrections = true;
+Ab2v_cor = chunkerkernevalmat(chnkr,l2d_d,S.r(1:2,:),opts);
+
+apply_b2v = @(mu) lap2d.apply_b2v_dir(S,chnkr,mu,Ab2v_cor,1e-12);
+lhs_12 = @(mu) V.*apply_b2v(mu);
 
 
 %% v2b
@@ -39,7 +53,15 @@ lhs_12 = V.*chunkerkernevalmat(chnkr,fkern,S.r(1:2,:));
 targinfo=[];
 targinfo.r = [chnkr.r(:,:);0*chnkr.r(1,:)];
 targinfo.n = [chnkr.n(:,:);0*chnkr.n(1,:)];
-lhs_21 = lap2d.v2b_dir(S,targinfo,1e-8);
+% lhs_21 = lap2d.v2b_dir(S,targinfo,1e-8);
+
+tic;
+[Av2b_cor,nover] = lap2d.get_quad_cor_v2b_dir(S, targinfo, 1e-12);
+toc;
+
+v2b_apply = @(mu) lap2d.apply_v2b_dir(S,targinfo,mu,Av2b_cor,nover,1e-12);
+lhs_21 = @(mu) v2b_apply(mu);
+
 
 
 
@@ -51,8 +73,8 @@ lhs_22 = -0.5*eye(chnkr.npt)+chunkermat(chnkr,l2d_d); %0.5*eye(n)... -
 
 %%
 
-lhs = [lhs_11, lhs_12; lhs_21, lhs_22];
-% lhs = @(x) [lhs_11(x(1:S.npts)) + lhs_12(x(S.npts+1:end)); lhs_21(x(1:S.npts)) + lhs_22*x(S.npts+1:end)];
+% lhs = [lhs_11, lhs_12; lhs_21, lhs_22];
+lhs = @(x) [lhs_11(x(1:S.npts)) + lhs_12(x(S.npts+1:end)); lhs_21(x(1:S.npts)) + lhs_22*x(S.npts+1:end)];
 
 
 % analytic solution : u = sin(x)sin(y)
@@ -61,7 +83,7 @@ rhs_2 = sin(chnkr.r(1,:)).*sin(chnkr.r(2,:)); % sin(xs(1,:))
 
 rhs = [rhs_1 rhs_2].';
 
-dens = lhs\rhs;
+dens = gmres(lhs,rhs,[],1e-10,2000);
 mu = dens(1:S.npts);
 rho = dens(S.npts+1:end);
 

@@ -25,3 +25,22 @@ Ab2v_cor = chunkerkernevalmat(chnkr,l2d_s,S.r(1:2,:),opts);
 sol2 = lap2d.apply_b2v_neu(S,chnkr,test_fn,Ab2v_cor,1e-12);
 
 vecnorm(sol1 - sol2) / vecnorm(sol1)
+
+l2d_d = kernel('l','d');
+
+Ab2v = chunkerkernevalmat(chnkr,l2d_d,S.r(1:2,:));
+
+test_fn = chnkr.r(1,:).*chnkr.r(2,:);
+test_fn = test_fn(:);
+
+sol1 = Ab2v * test_fn;
+
+% A_native = l2d_s.eval(chnkr,S).*chnkr.wts(:).'; 
+% sol2 = A_native*test_fn(:) + Ab2v_cor*test_fn;
+
+opts.corrections = true;
+Ab2v_cor = chunkerkernevalmat(chnkr,l2d_d,S.r(1:2,:),opts);
+
+sol2 = lap2d.apply_b2v_dir(S,chnkr,test_fn,Ab2v_cor,1e-12);
+
+vecnorm(sol1 - sol2) / vecnorm(sol1)
