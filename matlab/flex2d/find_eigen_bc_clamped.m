@@ -92,7 +92,7 @@ k = (0:n).';
 
 a = (1)^0.25;
 b = (200)^0.25;
-zks = (a+b)/2+(b-a)/2*cos(pi*(n-k)/n);
+lams = (a+b)/2+(b-a)/2*cos(pi*(n-k)/n);
 
 
 vals = zeros(n+1,1);

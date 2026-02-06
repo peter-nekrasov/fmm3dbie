@@ -34,7 +34,7 @@ lhs_11 = @(mu) - mu + V.*v2v_apply(mu);
 
 %% b2v
 
-% fkern = chnk.lap2d.kern;
+
 % fkern = @(s,t) chnk.lap2d.kern(s,t,'d');
 % lhs_12 = V.*chunkerkernevalmat(chnkr,fkern,S.r(1:2,:));
 

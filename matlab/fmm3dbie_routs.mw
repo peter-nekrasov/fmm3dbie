@@ -7213,7 +7213,7 @@ function A = v2v_matgen(S, zk, eps)
         if any(abs(zk) < 1e-6)
             zpars = zeros(1,2);
             zpars(1) = zk(abs(zk) >= 1e-6);
-            zpars(2) = 0
+            zpars(2) = 0; 
             A = zeros(npts,npts)+1i*zeros(npts,npts);
         # FORTRAN getnearquad_flex2d_gv2v(int[1] npatches, int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9,npts] srccoefs, double[n12,npts] srcvals, double[1] eps, dcomplex[2] zpars, int[1] iquadtype, int[1] nnz, int[ntp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0,int[1] nquad, inout dcomplex[nquad] A);
 
@@ -7322,7 +7322,7 @@ function A = v2b_matgen_dir(S,zk,targinfo,eps,ipatch_id,uvs_targ)
 
             zpars = zeros(1,2);
             zpars(1) = zk(abs(zk) >= 1e-6);
-            zpars(2) = 0
+            zpars(2) = 0;
             A = zeros(1,nquad)+1i*zeros(1,nquad);
         # FORTRAN getnearquad_flex2d_dir(int[1] npatches,int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9,npts] srccoefs, double[n12,npts] srcvals, int[1] ndtarg, int[1] ntarg, double[ndtarg,ntarg] targs, int[ntarg] ipatch_id, double[2,ntarg] uvs_targ, double[1]  eps, dcomplex[2] zpars, int[1] iquadtype, int[1] nnz, int[ntargp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout dcomplex[nquad] A);
         
@@ -7424,7 +7424,7 @@ function A = v2b_matgen_neu(S,zk,targinfo,eps,ipatch_id,uvs_targ)
 
             zpars = zeros(1,2);
             zpars(1) = zk(abs(zk) >= 1e-6);
-            zpars(2) = 0
+            zpars(2) = 0;
             A = zeros(1,nquad)+1i*zeros(1,nquad);
         # FORTRAN getnearquad_flex2d_neu(int[1] npatches,int[npatches] norders, int[npp1] ixyzs, int[npatches] iptype, int[1] npts, double[n9,npts] srccoefs, double[n12,npts] srcvals, int[1] ndtarg, int[1] ntarg, double[ndtarg,ntarg] targs, int[ntarg] ipatch_id, double[2,ntarg] uvs_targ, double[1]  eps, dcomplex[2] zpars, int[1] iquadtype, int[1] nnz, int[ntargp1] row_ptr, int[nnz] col_ind, int[nnzp1] iquad, double[1] rfac0, int[1] nquad, inout dcomplex[nquad] A);
 

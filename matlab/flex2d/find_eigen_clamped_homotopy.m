@@ -116,73 +116,78 @@ f = [rhs_vol1(:); rhs_bc1(:)];
 
 
 
-n = 25;
+n = 20;
 k = (0:n).';
-delta = 0.1;
 
-a = 2;
-b = 2.5;
-lam_quads = (a+b)/2+(b-a)/2*cos(pi*(n-k)/n);
+
+c1 = 102;
+c2 = 105;
+lams = (c1+c2)/2+(c2-c1)/2*cos(pi*(n-k)/n);
 
 
 vals = zeros(n+1,1);
 l2_dens = zeros(n+1,1);
 
+delta = 0.1;
 
-% PDE coefficient 
-a0 = -delta;
-b0 = -1;
-c0 = 0;
-zk1 = sqrt((- b0 + sqrt(b0^2 + 4*a0*c0))/(2*a0));
-zk2 = sqrt((- b0 - sqrt(b0^2 + 4*a0*c0))/(2*a0));
+
+a = -delta;
+b = -1; 
+c = 0;
+zk1 = sqrt((-b+sqrt(b^2+4*a*c))/(2*a));
+zk2 = sqrt((-b-sqrt(b^2+4*a*c))/(2*a));
 zk = [zk1 zk2];
 
 
-% kernels 
-A = flex2d.v2v_matgen(S,zk,1e-12);
+zk = 0;
+a = 1;
 
 
-fkern =  @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
-targetinfo = [];
-targetinfo.r = S.r(1:2,:);
-targetinfo.n = S.n(1:2,:);
-b2v = chunkerkernevalmat(chnkr,fkern,targetinfo);
+v2v = flex2d.v2v_matgen(S,zk,1e-10);
+
 
 
 targinfo=[];
 targinfo.r = [chnkr.r(:,:);0*chnkr.r(1,:)];
 targinfo.n = [chnkr.n(:,:);0*chnkr.n(1,:)];
-v2b_dir = flex2d.v2b_matgen_dir(S,zk,targinfo,1e-12);
-v2b_neu = flex2d.v2b_matgen_neu(S,zk,targinfo,1e-12);
-l21 = zeros(2*chnkr.npt,S.npts);
-l21(1:2:end,:) = v2b_dir;
-l21(2:2:end,:) = v2b_neu;
+v2b_dir = flex2d.v2b_matgen_dir(S,zk,targinfo,1e-8);
+v2b_neu = flex2d.v2b_matgen_neu(S,zk,targinfo,1e-8);
+v2b = zeros(2*chnkr.npt,S.npts);
+v2b(1:2:end,:) = v2b_dir;
+v2b(2:2:end,:) = v2b_neu;
 
+targetinfo = [];
+targetinfo.r = S.r(1:2,:);
+targetinfo.n = S.n(1:2,:);
 
-fkern =  @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate');
+fkern =  @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
+b2v = chunkerkernevalmat(chnkr,fkern,targetinfo);
+
 kappa = signed_curvature(chnkr);
 kappa = kappa(:);
-
 opts = [];
 opts.sing = 'log';
-
+fkern =  @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate');
 b2b = chunkermat(chnkr,fkern, opts);
-l22 = b2b + 0.5*eye(2*chnkr.npt);
-l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
+
+
 
 for i=1:n+1
+    
+    lam = lams(i);
 
-    lam = -lam_quads(i)^4;
-    l11 = -delta*eye(S.npts)-lam*A;
-    l12 = -lam*b2v;
+    l11 = a*eye(S.npts)+lam*v2v;
+    l12 = lam*b2v;
+    l21 = v2b;
+    l22 = b2b + 0.5*eye(2*chnkr.npt);
+    l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
 
     lhs = [l11, l12; 
         l21, l22];
+        
 
- 
     sol = gmres(lhs,g,[],1e-10,100); 
-  
-    
+ 
     W_vol = S.wts(:);
     W_bc = zeros(2*chnkr.npt,1);
     W_bc(1:2:end) = chnkr.wts(:);
@@ -196,9 +201,9 @@ end
 
 %%
 figure 
-plot(lam_quads,real(vals))
+plot(lams,real(vals))
 hold on 
-plot(lam_quads,imag(vals))
+plot(lams,imag(vals))
 legend('real','imag')
 
 
@@ -238,11 +243,12 @@ figure
 scatter(real(eis), imag(eis))
 
 eis = eis(abs(real(eis))<1);
-tol = 1E-6;
+tol = 1E-3;
 eis = eis(abs(imag(eis))<tol);
 
 
-(eis-aa)/2*(b-a)+a
+(eis-aa)/2*(c2-c1)+c1
+
 
 
 

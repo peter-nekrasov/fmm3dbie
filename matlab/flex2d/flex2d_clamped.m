@@ -26,9 +26,9 @@ view(0,90)
 
 V = eval_gauss(S.r);
 
-a = 1;
-b = 0.7;
-c = 1/pi;
+a = -0.5;
+b = -1;
+c = 0;
 
 zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
 zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
@@ -36,12 +36,13 @@ zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
 zk = [zk1 zk2];
 
 
+
 % volume to volume part 
 
 start = tic; 
 
 A = flex2d.v2v_matgen(S,zk,1e-10);
-l11 = eye(S.npts) + V.*A;
+l11 = a*eye(S.npts) + V.*A;
 
 t1 = toc(start);
 
