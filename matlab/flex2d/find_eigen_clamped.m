@@ -139,45 +139,46 @@ zk = [zk1 zk2];
 
 
 % kernels 
-A = flex2d.v2v_matgen(S,zk,1e-12);
-
+v2v = flex2d.v2v_matgen(S,zk,1e-12);
+v2v = real(v2v);
 
 fkern =  @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
 targetinfo = [];
 targetinfo.r = S.r(1:2,:);
 targetinfo.n = S.n(1:2,:);
 b2v = chunkerkernevalmat(chnkr,fkern,targetinfo);
-
+b2v = real(b2v);
 
 targinfo=[];
 targinfo.r = [chnkr.r(:,:);0*chnkr.r(1,:)];
 targinfo.n = [chnkr.n(:,:);0*chnkr.n(1,:)];
 v2b_dir = flex2d.v2b_matgen_dir(S,zk,targinfo,1e-12);
 v2b_neu = flex2d.v2b_matgen_neu(S,zk,targinfo,1e-12);
-l21 = zeros(2*chnkr.npt,S.npts);
-l21(1:2:end,:) = v2b_dir;
-l21(2:2:end,:) = v2b_neu;
+v2b = zeros(2*chnkr.npt,S.npts);
+v2b(1:2:end,:) = v2b_dir;
+v2b(2:2:end,:) = v2b_neu;
+v2b = real(v2b);
 
 
 fkern =  @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate');
 kappa = signed_curvature(chnkr);
 kappa = kappa(:);
-
 opts = [];
 opts.sing = 'log';
 
-b2b = chunkermat(chnkr,fkern, opts);
+b2b = chunkermat(chnkr,fkern, opts); 
+b2b = real(b2b);
 l22 = b2b + 0.5*eye(2*chnkr.npt);
 l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
 
 for i=1:n+1
 
     lam = -lam_quads(i)^4;
-    l11 = -delta*eye(S.npts)-lam*A;
+    l11 = -delta*eye(S.npts)-lam*v2v;
     l12 = -lam*b2v;
 
     lhs = [l11, l12; 
-        l21, l22];
+        v2b, l22];
 
  
     sol = gmres(lhs,g,[],1e-10,100); 
@@ -204,6 +205,7 @@ legend('real','imag')
 
 
 %%
+
 aa = -1;
 bb = 1;
 x = (aa+bb)/2+(bb-aa)/2*cos(pi*(n-k)/n);
@@ -241,10 +243,94 @@ eis = eis(abs(real(eis))<1);
 tol = 1E-6;
 eis = eis(abs(imag(eis))<tol);
 
+%%
 
-(eis-aa)/2*(b-a)+a
+lam_quad = real((eis-aa)/2*(b-a)+a);
+lam = -lam_quad^4;
+l11 = -delta*eye(S.npts)-lam*v2v;
+l12 = -lam*b2v;
+
+lhs = [l11, l12; 
+    v2b, l22];
+v = null(lhs);
+
+%%
+mu  = v(1:S.npts);
+rho = v(S.npts+1:end);
+u = v2v*mu + b2v*rho;
+c = 0.1;
+v = c*v/sqrt(sum(abs(u).^2.*S.wts(:)));
+y = [-v; lam];
+
+params = [];
+params.kappa = kappa;
+params.delta = delta;
+params.c = c;
+opts = optimoptions('fsolve', ...
+    'Display','iter', ...
+    'SpecifyObjectiveGradient', true, ...
+    'FunctionTolerance',1e-12, ...
+    'StepTolerance',1e-12, ...
+    'MaxFunctionEvaluations',2000);
+
+Nstep = 100;
+for i=1:Nstep
+    eps = i/Nstep;
+    fun = @(y) find_F_and_J(y, S, chnkr, v2v, v2b, b2v, b2b, eps, params);
+    y = fsolve(fun, y, opts);
+end
+
+
+%%
+
+sol = y(1:end-1);
+mu  = sol(1:S.npts);
+
+
+
+rho = sol(S.npts+1:end);
+u = v2v*mu + b2v*rho;
+
+figure; clf
+scatter(S.r(1,:),S.r(2,:),8,u); 
+colorbar
+
+
+%%
 
 
 
 
-
+% rs = linspace(0,1,50);
+% ths = linspace(0,2*pi,50);
+% [rs, ths] = meshgrid(rs, ths);
+% xs = rs.*cos(ths);
+% ys = rs.*sin(ths);
+% 
+% 
+% mu = y(1:S.npts);
+% rho = y(S.npts+1:end-1);
+% lam = y(end);
+% fkern =  @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
+% targetinfo = [];
+% targetinfo.r = [xs(:).';ys(:).'];
+% targetinfo.n = zeros(2,50^2);
+% u2 = real(chunkerkernevalmat(chnkr,fkern,targetinfo))*rho;
+% 
+% targetinfo.r = [xs(:).';ys(:).';zeros(1,50^2)];
+% targetinfo.n = [zeros(2,50^2);-ones(1,50^2)];
+% u1 =  real(flex2d.v2b_matgen_dir(S,zk,targetinfo,1e-12))*mu;
+% u3 = u1+u2;
+% 
+% 
+% 
+% Nr  = size(xs,1);
+% Nth = size(xs,2);
+% 
+% u3 = reshape(u3, Nr, Nth);
+% 
+% figure
+% surf(xs, ys, u3, 'EdgeColor','none');
+% axis equal tight
+% view(2)
+% colorbar
