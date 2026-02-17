@@ -9,7 +9,7 @@ run('/Users/yuguan/software/chunkie/startup.m')
 run('/Users/yuguan/software/fmm3dbie/matlab/startup.m')
 addpath '/Users/yuguan/software/fmm3dbie/src'
 
-S = geometries.disk([],[],[4 4 4],9);
+S = geometries.disk([],[],[4 4 4],8);
 
 % chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));
 nch = 4*4;
@@ -116,26 +116,15 @@ f = [rhs_vol1(:); rhs_bc1(:)];
 
 
 
-n = 25;
-k = (0:n).';
-delta = 0.1;
+p = 6;
+% nu = 10;
+nu = 1;
+m = 1;
 
-a = 2;
-b = 2.5;
-lam_quads = (a+b)/2+(b-a)/2*cos(pi*(n-k)/n);
-
-
-vals = zeros(n+1,1);
-l2_dens = zeros(n+1,1);
 
 
 % PDE coefficient 
-a0 = -delta;
-b0 = -1;
-c0 = 0;
-zk1 = sqrt((- b0 + sqrt(b0^2 + 4*a0*c0))/(2*a0));
-zk2 = sqrt((- b0 - sqrt(b0^2 + 4*a0*c0))/(2*a0));
-zk = [zk1 zk2];
+zk = 0;
 
 
 % kernels 
@@ -171,13 +160,24 @@ b2b = real(b2b);
 l22 = b2b + 0.5*eye(2*chnkr.npt);
 l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
 
+
+%%
 if 1==0
+    a = 2;
+    b = 4;
+    n = 50;
+    k = (0:n).';
+
+    lam_quads = (a+b)/2+(b-a)/2*cos(pi*(n-k)/n);
+    
+    
+    vals = zeros(n+1,1);
+
 
     for i=1:n+1
     
-        lam = -lam_quads(i)^4;
-        l11 = -delta*eye(S.npts)-lam*v2v;
-        l12 = -lam*b2v;
+        l11 = eye(S.npts)+(m-lam_quads(i)^4)*v2v;
+        l12 = (m-lam_quads(i)^4)*b2v;
     
         lhs = [l11, l12; 
             v2b, l22];
@@ -247,23 +247,116 @@ if 1==0
     
     
     
-    lam_quad = real((eis-aa)/2*(b-a)+a);
+    lam_quad = (eis-aa)/2*(b-a)+a;
 end
 
 
-lam_quad = 2.038867005506205;
 
 
 
-lam = -lam_quad^4;
-l11 = -delta*eye(S.npts)-lam*v2v;
-l12 = -lam*b2v;
+%%
 
+
+lam_quad = 3.203849748616112 + 0.000000000009984i;
+lam = real(lam_quad^4);
+l11 = eye(S.npts)+(m-lam)*v2v;
+l12 = (m-lam)*b2v;
 lhs = [l11, l12; 
     v2b, l22];
 v = null(lhs);
 
 
+
+
+%%
+
+
+
+mu  = v(1:S.npts);
+rho = v(S.npts+1:end);
+u = v2v*mu + b2v*rho;
+
+
+
+
+% figure; 
+% clf
+% scatter(S.r(1,:),S.r(2,:),8,u); 
+% colorbar
+
+
+%% 
+
+
+
+
+
+c = 2.5;
+
+
+params.p = p;
+params.m = m;
+params.nu = nu;
+params.kappa = kappa;
+params.c = c;
+
+
+
+
+if (1==0)
+    
+    eps = 0.3;
+
+    mu0  = randn(S.npts,1);
+    rho0 = randn(2*chnkr.npt,1);
+    lam0 = 0.8;
+    x0   = [mu0; rho0; lam0];
+    
+    [F0, J0] = find_F_and_J_beam(x0, S, chnkr, v2v, v2b, b2v, b2b, eps, params);
+    
+    fprintf('||F(x0)|| = %.3e\n', norm(F0));
+    
+    hs = 10.^(-(2:10));
+    ndir = 6;
+    
+    for kdir = 1:ndir
+        dir = randn(size(x0));
+        dir = dir / norm(dir);
+    
+        Jv = J0*v;
+    
+        errs = zeros(size(hs));
+        for i = 1:numel(hs)
+            h = hs(i);
+            Fp = find_F_and_J_beam(x0 + h*dir, S, chnkr, v2v, v2b, b2v, b2b, eps, params);
+            Fm = find_F_and_J_beam(x0 - h*dir, S, chnkr, v2v, v2b, b2v, b2b, eps, params);
+    
+            fd = (Fp - Fm)/(2*h);
+            errs(i) = norm(fd - Jv) / max(1, norm(Jv));
+        end
+    
+        fprintf('\nDirection %d:\n', kdir);
+        fprintf('   h          relerr\n');
+        for i = 1:numel(hs)
+            fprintf('%8.1e   %10.3e\n', hs(i), errs(i));
+        end
+    
+        [emin, idx] = min(errs);
+        fprintf('min relerr = %.3e at h = %.1e\n', emin, hs(idx));
+    end
+    
+
+
+end
+
+
+
+
+%%
+
+v1 = c*v/sqrt(sum(abs(u).^2.*S.wts(:)));
+z = [-v1; lam]; 
+z0 = z;
 
 opts = optimoptions('fsolve', ...
     'Display','iter', ...
@@ -275,85 +368,76 @@ opts = optimoptions('fsolve', ...
 
 
 
-
-mu  = v(1:S.npts);
-rho = v(S.npts+1:end);
-u = v2v*mu + b2v*rho;
-
-
-
-
-figure; 
-clf
-scatter(S.r(1,:),S.r(2,:),8,u); 
-colorbar
-
-
-
-c = 2.5;
-v1 = c*v/sqrt(sum(abs(u).^2.*S.wts(:)));
-y = [v1; lam];
-
-params = [];
-params.kappa = kappa;
-params.delta = delta;
-params.c = c;
-
 Nstep = 20;
 for i=1:Nstep
     eps = i/Nstep;
-    fun = @(y) find_F_and_J(y, S, chnkr, v2v, v2b, b2v, b2b, eps, params);
-    y = fsolve(fun, y, opts);
+    fun = @(y) find_F_and_J_beam(y, S, chnkr, v2v, v2b, b2v, b2b, eps, params);
+    z = fsolve(fun, z, opts);
 end
 
 
 
-sol = y(1:end-1);
-mu  = sol(1:S.npts);
+%%
+
+sol = z0(1:end-1);
 
 
 
-rho = sol(S.npts+1:end);
-u = v2v*mu + b2v*rho;
+nx = 200;
+x = linspace(-1,1,nx);
+y = linspace(-1,1,nx);
+[x,y] = ndgrid(x,y); 
+x = x(:).';
+y = y(:).';
+idx = x.^2+y.^2<1;
+xi = x(idx);
+yi = y(idx);
+targinfo = [];
+targinfo.r = [xi; yi; zeros(size(xi))];
+targinfo.n = zeros(size(targinfo.r));
+targinfo.n(3,:) = 1;
 
-figure; clf
-scatter(S.r(1,:),S.r(2,:),8,u); 
+
+A = flex2d.v2b_matgen_dir(S,zk,targinfo,1e-8);
+ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
+u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
+    sol(S.npts+1:end), targinfo.r(1:2,:));
+u = real(u);
+
+U = NaN(size(x));
+U(idx) = u;
+U1 = reshape(U, [nx,nx]);
+
+
+
+figure; 
+tiledlayout('flow')
+nexttile 
+h = imagesc(U1);
+set(h, 'AlphaData', ~isnan(U1));
+set(gca, 'Color', 'w');  
+axis image
 colorbar
+title('$u^{(0)} (\lambda^{(0)}\approx 105.3631)$',Interpreter='latex',FontSize=16)
 
 
 
-% rs = linspace(0,1,50);
-% ths = linspace(0,2*pi,50);
-% [rs, ths] = meshgrid(rs, ths);
-% xs = rs.*cos(ths);
-% ys = rs.*sin(ths);
-% 
-% 
-% mu = y(1:S.npts);
-% rho = y(S.npts+1:end-1);
-% lam = y(end);
-% fkern =  @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
-% targetinfo = [];
-% targetinfo.r = [xs(:).';ys(:).'];
-% targetinfo.n = zeros(2,50^2);
-% u2 = real(chunkerkernevalmat(chnkr,fkern,targetinfo))*rho;
-% 
-% targetinfo.r = [xs(:).';ys(:).';zeros(1,50^2)];
-% targetinfo.n = [zeros(2,50^2);-ones(1,50^2)];
-% u1 =  real(flex2d.v2b_matgen_dir(S,zk,targetinfo,1e-12))*mu;
-% u3 = u1+u2;
-% 
-% 
-% 
-% Nr  = size(xs,1);
-% Nth = size(xs,2);
-% 
-% u3 = reshape(u3, Nr, Nth);
-% 
-% figure
-% surf(xs, ys, u3, 'EdgeColor','none');
-% axis equal tight
-% view(2)
-% colorbar
+sol = z(1:end-1);
+u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
+    sol(S.npts+1:end), targinfo.r(1:2,:));
+u = real(u);
 
 
+U = NaN(size(x));
+U(idx) = u;
+U2 = reshape(U, [nx,nx]);
+
+
+
+nexttile 
+h = imagesc(U2);
+set(h, 'AlphaData', ~isnan(U2));
+set(gca, 'Color', 'w');  
+axis image
+colorbar
+title('$u^{(K)} (\lambda^{(K)}\approx 614.011)$',Interpreter='latex',FontSize=16)

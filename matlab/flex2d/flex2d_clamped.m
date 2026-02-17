@@ -124,12 +124,15 @@ rhs(S.npts+1:end) = rhs_bc;
 start = tic; 
 sol = gmres(lhs,rhs,[],1e-10,100); 
 t1 = toc(start);
-fprintf('%5.2e s : time for dense gmres\n',t1)    
+fprintf('%5.2e s : time for dense gmres\n',t1)   
+
+
 
 ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
 start1 = tic;
 u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
     sol(S.npts+1:end), S.r(1:2,:));
+u = real(u);
 t2 = toc(start1);
 fprintf('%5.2e s : time for kernel eval (for plotting)\n',t2)
 
@@ -137,9 +140,42 @@ ref_u = (sin(S.r(1,:)).*sin(S.r(2,:))).';
 err = abs(u - ref_u(:)) / max(abs(u));
 
 
-figure(2); clf
-scatter(S.r(1,:),S.r(2,:),8,log10(err)); 
+figure; clf
+scatter(S.r(1,:),S.r(2,:),8,u); 
 colorbar
+
+
+%%
+
+nx = 200;
+x = linspace(-1,1,nx);
+y = linspace(-1,1,nx);
+[x,y] = ndgrid(x,y); 
+x = x(:).';
+y = y(:).';
+idx = x.^2+y.^2<1;
+xi = x(idx);
+yi = y(idx);
+targinfo = [];
+targinfo.r = [xi; yi; zeros(size(xi))];
+targinfo.n = zeros(size(targinfo.r));
+targinfo.n(3,:) = 1;
+
+
+A = flex2d.v2b_matgen_dir(S,zk,targinfo,1e-8);
+u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
+    sol(S.npts+1:end), targinfo.r(1:2,:));
+u = real(u);
+
+U = NaN(size(x));
+U(idx) = u;
+U = reshape(U, [nx,nx]);
+
+figure; clf
+imagesc(U); 
+set(gca, 'Color', 'w');
+colorbar
+
 
 
 

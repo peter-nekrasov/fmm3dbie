@@ -1,4 +1,4 @@
-function [F, J] = find_F_and_J(x, S, chnkr, v2v, v2b, b2v, b2b, eps, params)
+function [F, J] = find_F_and_J_beam(x, S, chnkr, v2v, v2b, b2v, b2b, eps, params)
 
 mu  = x(1:S.npts);
 rho = x(S.npts+1:end-1);
@@ -6,30 +6,39 @@ lam = x(end);
 
 u = v2v*mu + b2v*rho;
 
-nonlin  = (1 + u).^(-2);
-dnonlin = -2*(1 + u).^(-3);
 
-delta = params.delta;
-F1 = delta*mu + (1-eps)*lam*u + eps*lam*nonlin;
-
-l22 = b2b + 0.5*eye(2*chnkr.npt);
+p  = params.p;
 kappa = params.kappa;
-l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
-F2 = v2b*mu + l22*rho;
-
+m  = params.m;
+nu = params.nu;
 c = params.c;
-F3 = sum(abs(u).^2.*S.wts(:)) - c^2;
-
-F = [F1; F2; F3];
 
 nV = S.npts;
 nB = numel(rho);
 
+
+nonlin = abs(u).^(p-1).*u;
+dnonlin = p * abs(u).^(p-1);
+dnonlin(u==0) = 0;
 Dnonlin = spdiags(dnonlin, 0, nV, nV);
 
-dF1mu = delta*speye(nV) + (1-eps)*lam*v2v + eps*lam*(Dnonlin*v2v);
-dF1rho = (1-eps)*lam*b2v + eps*lam*(Dnonlin*b2v);
-dF1lam = (1-eps)*u + eps*nonlin;
+
+F1 = mu + m*u + eps*nu*nonlin - lam*u;
+
+l22 = b2b + 0.5*eye(2*chnkr.npt);
+l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
+F2 = v2b*mu + l22*rho;
+
+
+F3 = sum(abs(u).^2.*S.wts(:)) - c^2;
+
+F = [F1; F2; F3];
+
+
+
+dF1mu  = speye(nV) + (m-lam)*v2v + eps*nu*(Dnonlin*v2v);
+dF1rho = (m-lam)*b2v + eps*nu*(Dnonlin*b2v);
+dF1lam = -u;
 
 dF2mu  = v2b;
 dF2rho = l22;

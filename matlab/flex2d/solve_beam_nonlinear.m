@@ -1,5 +1,9 @@
+% genpath('/Users/squinn/chunkie/')
+% addpath('/Users/squinn/chunkie/')
+% addpath('/Users/squinn/chunkie/chunkie/')
 clear 
 clc 
+
 
 run('/Users/yuguan/software/chunkie/startup.m')
 run('/Users/yuguan/software/fmm3dbie/matlab/startup.m')
@@ -16,22 +20,7 @@ chnkr = sort(chnkr);
 
 
 
-a = 1;
-b = 2.1;
-c = .8;
-
-
-zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
-zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
-
-zk = [zk1 zk2];
-
-
-
-
-
-%%
-
+zk = 0;
 
 %v2v 
 v2v = flex2d.v2v_matgen(S,zk,1e-10);
@@ -74,10 +63,12 @@ l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
 uref = sin(S.r(1,:)).*sin(S.r(2,:));
 uref = uref(:);
 
-epsilon = .2;
-rhs_vol = (4*a+2*b-1*c)*sin(S.r(1,:)).*sin(S.r(2,:)) ;
-% rhs_vol = rhs_vol+epsilon*abs(sin(S.r(1,:)).*sin(S.r(2,:))).^2.*sin(S.r(1,:)).*sin(S.r(2,:));
-rhs_vol = rhs_vol+epsilon./(1+sin(S.r(1,:)).*sin(S.r(2,:))).^2;
+m = 1;
+lam = 0.1;
+p = 6;
+
+rhs_vol = (4+m)*sin(S.r(1,:)).*sin(S.r(2,:)) ;
+rhs_vol = rhs_vol+lam*abs(sin(S.r(1,:)).*sin(S.r(2,:))).^(p-1).*sin(S.r(1,:)).*sin(S.r(2,:));
 
 rhs_bc = zeros(chnkr.npt*2,1);
 rhs_bc(1:2:end) = sin(chnkr.r(1,:)).*sin(chnkr.r(2,:));
@@ -110,7 +101,14 @@ for iter=1:niter
     u = u(:);
 
     rel_err = norm(u-uref)/norm(uref)
-    % V = epsilon*abs(u).^2;
-    V = epsilon./((1+u).^2.*u);
+    V = m+lam*abs(u).^(p-1);
     
 end
+
+
+
+
+
+%%
+
+
