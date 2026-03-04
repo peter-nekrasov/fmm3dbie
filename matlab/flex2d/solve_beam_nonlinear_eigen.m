@@ -117,8 +117,8 @@ f = [rhs_vol1(:); rhs_bc1(:)];
 
 
 p = 6;
-% nu = 10;
 nu = 1;
+% nu = 1;
 m = 1;
 
 
@@ -355,7 +355,7 @@ end
 %%
 
 v1 = c*v/sqrt(sum(abs(u).^2.*S.wts(:)));
-z = [-v1; lam]; 
+z = [v1; lam]; 
 z0 = z;
 
 opts = optimoptions('fsolve', ...

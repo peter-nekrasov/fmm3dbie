@@ -23,7 +23,8 @@ dnonlin(u==0) = 0;
 Dnonlin = spdiags(dnonlin, 0, nV, nV);
 
 
-F1 = mu + m*u + eps*nu*nonlin - lam*u;
+% F1 = mu + m*u + eps*nu*nonlin - lam*u;
+F1 = mu + m*u - lam*eps*nu*nonlin - lam*(1-eps)*u;
 
 l22 = b2b + 0.5*eye(2*chnkr.npt);
 l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
@@ -35,10 +36,13 @@ F3 = sum(abs(u).^2.*S.wts(:)) - c^2;
 F = [F1; F2; F3];
 
 
-
-dF1mu  = speye(nV) + (m-lam)*v2v + eps*nu*(Dnonlin*v2v);
-dF1rho = (m-lam)*b2v + eps*nu*(Dnonlin*b2v);
-dF1lam = -u;
+% 
+% dF1mu  = speye(nV) + (m-lam)*v2v + eps*nu*(Dnonlin*v2v);
+% dF1rho = (m-lam)*b2v + eps*nu*(Dnonlin*b2v);
+% dF1lam = -u;
+dF1mu  = speye(nV) + m*v2v - lam*( eps*nu*(Dnonlin*v2v) - (1-eps)*v2v );
+dF1rho = m*b2v      + lam*( -eps*nu*(Dnonlin*b2v) - (1-eps)*b2v );
+dF1lam = -eps*nu*nonlin - (1-eps)*u;
 
 dF2mu  = v2b;
 dF2rho = l22;

@@ -5,9 +5,6 @@
 clear 
 clc
 
-run('/Users/yuguan/software/chunkie/startup.m')
-run('/Users/yuguan/Dropbox/fmm3dbie/matlab/startup.m')
-addpath '/Users/yuguan/Dropbox/fmm3dbie/src'
 
 S = geometries.disk([],[],[4 4 4],8);
 

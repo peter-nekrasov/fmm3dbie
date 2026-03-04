@@ -9,7 +9,7 @@ run('/Users/yuguan/software/chunkie/startup.m')
 run('/Users/yuguan/software/fmm3dbie/matlab/startup.m')
 addpath '/Users/yuguan/software/fmm3dbie/src'
 
-S = geometries.disk([],[],[4 4 4],9);
+S = geometries.disk([],[],[4 4 4],8);
 
 % chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));
 nch = 4*4;
@@ -171,90 +171,81 @@ b2b = real(b2b);
 l22 = b2b + 0.5*eye(2*chnkr.npt);
 l22(2:2:end,1:2:end) = l22(2:2:end,1:2:end) - kappa.*eye(chnkr.npt);
 
-if 1==0
+for i=1:n+1
 
-    for i=1:n+1
+    lam = -lam_quads(i)^4;
+    l11 = -delta*eye(S.npts)-lam*v2v;
+    l12 = -lam*b2v;
+
+    lhs = [l11, l12; 
+        v2b, l22];
+
+ 
+    sol = gmres(lhs,g,[],1e-10,100); 
+  
     
-        lam = -lam_quads(i)^4;
-        l11 = -delta*eye(S.npts)-lam*v2v;
-        l12 = -lam*b2v;
+    W_vol = S.wts(:);
+    W_bc = zeros(2*chnkr.npt,1);
+    W_bc(1:2:end) = chnkr.wts(:);
+    W_bc(2:2:end) = chnkr.wts(:);
+    W = [W_vol(:); W_bc(:)];
+    vals(i) = 1/(sum(f.*sol.*W));
     
-        lhs = [l11, l12; 
-            v2b, l22];
-    
-     
-        sol = gmres(lhs,g,[],1e-10,100); 
-      
-        
-        W_vol = S.wts(:);
-        W_bc = zeros(2*chnkr.npt,1);
-        W_bc(1:2:end) = chnkr.wts(:);
-        W_bc(2:2:end) = chnkr.wts(:);
-        W = [W_vol(:); W_bc(:)];
-        vals(i) = 1/(sum(f.*sol.*W));
-        
-    
-    end
-    
-    
-    %%
-    figure 
-    plot(lam_quads,real(vals))
-    hold on 
-    plot(lam_quads,imag(vals))
-    legend('real','imag')
-    
-    
-    
-    %%
-    
-    aa = -1;
-    bb = 1;
-    x = (aa+bb)/2+(bb-aa)/2*cos(pi*(n-k)/n);
-    [N,X] = ndgrid(k,x);
-    c2v = cos(N.*acos(X)).';
-    % v2c = inv(c2v);
-    cfs = c2v\vals;
-    
-    figure; 
-    plot(log10(abs(cfs)))
-    legend('|coef of cheb. poly.|')
-    
-    %%
-    
-    
-    coll = zeros(n,n);
-    for ii=1:(n-1)
-        coll(ii,ii+1) = 1/2;
-        coll(ii+1,ii) = 1/2;
-    end
-    
-    coll(1,2) = 1;
-    
-    cfred = cfs(1:(end-1))/(2*cfs(end));
-    
-    coll(end,:)=coll(end,:)-cfred.';
-    
-    eis = eigs(coll,n);
-    
-    
-    figure
-    scatter(real(eis), imag(eis))
-    
-    eis = eis(abs(real(eis))<1);
-    tol = 1E-6;
-    eis = eis(abs(imag(eis))<tol);
-    
-    
-    
-    lam_quad = real((eis-aa)/2*(b-a)+a);
+
 end
 
 
-lam_quad = 2.038867005506205;
+%%
+figure 
+plot(lam_quads,real(vals))
+hold on 
+plot(lam_quads,imag(vals))
+legend('real','imag')
 
 
 
+%%
+
+aa = -1;
+bb = 1;
+x = (aa+bb)/2+(bb-aa)/2*cos(pi*(n-k)/n);
+[N,X] = ndgrid(k,x);
+c2v = cos(N.*acos(X)).';
+% v2c = inv(c2v);
+cfs = c2v\vals;
+
+figure; 
+plot(log10(abs(cfs)))
+legend('|coef of cheb. poly.|')
+
+%%
+
+
+coll = zeros(n,n);
+for ii=1:(n-1)
+    coll(ii,ii+1) = 1/2;
+    coll(ii+1,ii) = 1/2;
+end
+
+coll(1,2) = 1;
+
+cfred = cfs(1:(end-1))/(2*cfs(end));
+
+coll(end,:)=coll(end,:)-cfred.';
+
+eis = eigs(coll,n);
+
+
+figure
+scatter(real(eis), imag(eis))
+
+eis = eis(abs(real(eis))<1);
+tol = 1E-6;
+eis = eis(abs(imag(eis))<tol);
+
+%%
+
+lam_quad = real((eis-aa)/2*(b-a)+a);
 lam = -lam_quad^4;
 l11 = -delta*eye(S.npts)-lam*v2v;
 l12 = -lam*b2v;
@@ -263,62 +254,91 @@ lhs = [l11, l12;
     v2b, l22];
 v = null(lhs);
 
-
-
-opts = optimoptions('fsolve', ...
-    'Display','iter', ...
-    'SpecifyObjectiveGradient', true, ...
-    'FunctionTolerance',1e-12, ...
-    'StepTolerance',1e-12, ...
-    'MaxFunctionEvaluations',10000);
-
-
-
-
-
+%%
 mu  = v(1:S.npts);
 rho = v(S.npts+1:end);
 u = v2v*mu + b2v*rho;
-
-
-
-
-figure; 
-clf
-scatter(S.r(1,:),S.r(2,:),8,u); 
-colorbar
-
-
-
 c = 2.5;
-v1 = c*v/sqrt(sum(abs(u).^2.*S.wts(:)));
-y = [v1; lam];
+v = c*v/sqrt(sum(abs(u).^2.*S.wts(:)));
+z = [v; lam];
 
 params = [];
 params.kappa = kappa;
 params.delta = delta;
 params.c = c;
+opts = optimoptions('fsolve', ...
+    'Display','iter', ...
+    'SpecifyObjectiveGradient', true, ...
+    'FunctionTolerance',1e-12, ...
+    'StepTolerance',1e-12, ...
+    'MaxFunctionEvaluations',2000);
 
 Nstep = 20;
 for i=1:Nstep
     eps = i/Nstep;
-    fun = @(y) find_F_and_J(y, S, chnkr, v2v, v2b, b2v, b2b, eps, params);
-    y = fsolve(fun, y, opts);
+    fun = @(y) find_F_and_J_capacitor(y, S, chnkr, v2v, v2b, b2v, b2b, eps, params);
+    z = fsolve(fun, z, opts);
 end
 
 
+%%
 
-sol = y(1:end-1);
-mu  = sol(1:S.npts);
+sol = z(1:end-1);
+nx = 200;
+x = linspace(-1,1,nx);
+y = linspace(-1,1,nx);
+[x,y] = ndgrid(x,y); 
+x = x(:).';
+y = y(:).';
+idx = x.^2+y.^2<1;
+xi = x(idx);
+yi = y(idx);
+targinfo = [];
+targinfo.r = [xi; yi; zeros(size(xi))];
+targinfo.n = zeros(size(targinfo.r));
+targinfo.n(3,:) = 1;
+
+A = flex2d.v2b_matgen_dir(S,zk,targinfo,1e-8);
+ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'clamped_plate_eval');
+u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
+    sol(S.npts+1:end), targinfo.r(1:2,:));
+u = real(u);
+
+U = NaN(size(x));
+U(idx) = u;
+U2 = reshape(U, [nx,nx]);
 
 
 
-rho = sol(S.npts+1:end);
-u = v2v*mu + b2v*rho;
 
-figure; clf
-scatter(S.r(1,:),S.r(2,:),8,u); 
+sol = v;
+u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
+    sol(S.npts+1:end), targinfo.r(1:2,:));
+u = real(u);
+
+U = NaN(size(x));
+U(idx) = u;
+U1 = reshape(U, [nx,nx]);
+
+%%
+
+figure; 
+tiledlayout('flow')
+nexttile 
+h = imagesc(U1);
+set(h, 'AlphaData', ~isnan(U1));
+set(gca, 'Color', 'w');  
+axis image
 colorbar
+title('$u^{(0)} (\lambda^{(0)}\approx -17.281)$',Interpreter='latex',FontSize=16)
+
+nexttile 
+h = imagesc(U2);
+set(h, 'AlphaData', ~isnan(U2));
+set(gca, 'Color', 'w');  
+axis image
+colorbar
+title('$u^{(K)} (\lambda^{(K)}\approx -216.879)$',Interpreter='latex',FontSize=16)
 
 
 
@@ -355,5 +375,3 @@ colorbar
 % axis equal tight
 % view(2)
 % colorbar
-
-
