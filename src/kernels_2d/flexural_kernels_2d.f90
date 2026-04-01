@@ -126,3 +126,75 @@ subroutine flex2d_gsupp2(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
             
   return
 end subroutine flex2d_gsupp2
+!
+!
+!
+!
+!
+!
+!
+!
+subroutine flex2d_gfree2(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
+   ndi,ipars,val)
+  implicit real *8 (a-h,o-z)
+  real *8 :: srcinfo(*),targinfo(ndt),dpars(1)
+  integer ipars(ndi)
+  real *8 :: dx, dy, r2, rdotn
+  real *8 :: nu, nx, ny, kappa
+  real *8 :: nx2, nx3, ny2, ny3
+  real *8 :: taux, tauy, taux2, tauy2
+  complex *16 :: zk(2), zk1, zk2
+  complex *16 :: val, gsxx, gsxy, gsyy
+  complex *16 :: gsxxx, gsxxy, gsxyy, gsyyy
+  complex *16 :: h01,h01x,h01y,h02,h02x,h02y
+  complex *16 :: h01xx,h01xy,h01yy,h01xxx,h01xxy,h01xyy,h01yyy
+  complex *16 :: h02xx,h02xy,h02yy,h02xxx,h02xxy,h02xyy,h02yyy  
+  !
+  ! returns the second free plate condition of the
+  ! flexural volumetric kernel
+  !
+
+
+  dx = targinfo(1) - srcinfo(1)
+  dy = targinfo(2) - srcinfo(2)
+
+  zk1 = zk(1)
+  zk2 = zk(2)
+
+  nx = targinfo(10)
+  ny = targinfo(11)
+  kappa = targinfo(13)
+
+  taux = targinfo(4)
+  tauy = targinfo(5)
+
+  nu = dpars(1)
+
+  call helmdiffgreen(zk1,dx,dy,h01,h01x,h01y,h01xx,h01xy,h01yy,&
+    h01xxx,h01xxy,h01xyy,h01yyy)
+  call helmdiffgreen(zk2,dx,dy,h02,h02x,h02y,h02xx,h02xy,h02yy,&
+    h02xxx,h02xxy,h02xyy,h02yyy)
+
+  gsxx = (h01xx-h02xx)/(zk1*zk1-zk2*zk2)
+  gsxy = (h01xy-h02xy)/(zk1*zk1-zk2*zk2)
+  gsyy = (h01yy-h02yy)/(zk1*zk1-zk2*zk2)
+
+  gsxxx = (h01xxx-h02xxx)/(zk1*zk1-zk2*zk2)
+  gsxxy = (h01xxy-h02xxy)/(zk1*zk1-zk2*zk2)
+  gsxyy = (h01xyy-h02xyy)/(zk1*zk1-zk2*zk2)
+  gsyyy = (h01yyy-h02yyy)/(zk1*zk1-zk2*zk2)
+
+
+  val = gsxxx*nx*nx*nx + 3*gsxxy*nx*nx*ny + 3*gsxyy*nx*ny*ny + &
+      gsyyy*ny*ny*ny + (2-nu)*(gsxxx*nx*taux*taux + &
+      gsxxy*(taux*taux*ny + 2*taux*tauy*nx) + &
+      gsxyy*(2*taux*tauy*ny + tauy*tauy*nx) + &
+      gsyyy*tauy*tauy*ny)+kappa*(1-nu)*(gsxx*taux*taux + &
+      2*gsxy*taux*tauy+gsyy*tauy*tauy - gsxx*nx*nx - &
+      2*gsxy*nx*ny - gsyy*ny*ny)
+
+
+  return
+end subroutine flex2d_gfree2
+!
+

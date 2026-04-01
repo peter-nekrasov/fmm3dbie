@@ -112,6 +112,7 @@ subroutine bh2d_gfree2(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
   integer ipars(ndi)
   real *8 :: dx, dy, r2, rdotn
   real *8 :: val, nu, gsxx, gsxy ,gsyy
+  real *8 :: gsxxx, gsxxy ,gsxyy, gsyyy
   real *8 :: over4pi
   real *8 :: taux, tauy, taux2, tauy2
   real *8 :: nx, ny, nx2, ny2, nx3, ny3 
@@ -131,17 +132,8 @@ subroutine bh2d_gfree2(srcinfo,ndt,targinfo,ndd,dpars,ndz,zk, &
   ny = targinfo(11)
   kappa = targinfo(13)
 
-  nx2 = nx*nx 
-  nx3 = nx*nx2 
-
-  ny2 = ny*ny 
-  ny3 = ny*ny2 
-
   taux = targinfo(4)
   tauy = targinfo(5)
-
-  taux2 = taux*taux 
-  tauy2 = tauy*tauy
 
   nu = dpars(1)
 

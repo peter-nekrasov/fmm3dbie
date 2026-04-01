@@ -1,18 +1,9 @@
-% genpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/chunkie/')
+% solving a \Delta^2 u - b \Delta u - c u + V u = 0 w/ supported BCs
 
-clear 
-clc
+S = geometries.disk([],[],[4 4 4],6);
 
-
-S = geometries.disk([],[],[4 4 4],8);
-
-% chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));
-nch = 4*4;
-cparams.ta = pi/nch;
-cparams.tb = 2*pi + cparams.ta;
-chnkr = chunkerfuncuni(@(t) ellipse(t),nch,cparams);
+cparams = []; cparams.maxchunklen = 4/max(abs(zk));
+chnkr = chunkerfunc(@(t) ellipse(t),cparams);
 chnkr = sort(chnkr);
 chnkr = makedatarows(chnkr,2);
 
@@ -31,17 +22,6 @@ plot(chnkr,'x-')
 view(0,90)
 
 V = eval_gauss(S.r);
-
-a = 1;
-b = 0.7;
-c = 1/pi;
-nu = .3;
-
-zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
-zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
-
-% zk=1;
-zk = [zk1,zk2];
 
 
 % volume to volume part 

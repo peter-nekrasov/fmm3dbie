@@ -1,17 +1,18 @@
-% genpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/chunkie/')
+% solving a \Delta^2 u - b \Delta u - c u + V u = 0 w/ clamped BCs
 
-clear 
-clc
+S = geometries.disk([],[],[4 4 4],6);
 
-S = geometries.disk([],[],[4 4 4],8);
+a = 1;
+b = 0.7;
+c = 1/pi;
 
-% chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));
-nch = 4*4;
-cparams.ta = pi/nch;
-cparams.tb = 2*pi + cparams.ta;
-chnkr = chunkerfuncuni(@(t) ellipse(t),nch,cparams);
+zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
+zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
+
+zk = [zk1 zk2];
+
+cparams = []; cparams.maxchunklen = 4/max(abs(zk));
+chnkr = chunkerfunc(@(t) ellipse(t),cparams);
 chnkr = sort(chnkr);
 
 figure(1); clf
@@ -22,23 +23,12 @@ view(0,90)
 
 V = eval_gauss(S.r);
 
-a = -0.5;
-b = -1;
-c = 0;
-
-zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
-zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
-
-zk = [zk1 zk2];
-
-
-
 % volume to volume part 
 
 start = tic; 
 
-A = flex2d.v2v_matgen(S,zk,1e-10);
-l11 = a*eye(S.npts) + V.*A;
+A = flex2d.v2v_matgen(S,zk,1e-8);
+l11 = eye(S.npts) + V.*A;
 
 t1 = toc(start);
 
@@ -96,17 +86,18 @@ t1 = toc(start);
 fprintf('%5.2e s : time to assemble b2b matrix\n',t1)
 
 
+% rhs = - a \Delta^2 ui + b \Delta ui + c ui - V ui 
 
 % form system matrix and rhs 
 lhs = [l11, l12; 
     l21, l22];
 
 
-rhs_vol = (4*a+2*b-c+V(:).').*sin(S.r(1,:)).*sin(S.r(2,:)) ; 
+rhs_vol = (-4*a-2*b+c-V(:).').*sin(S.r(1,:)).*sin(S.r(2,:)) ; 
 rhs_bc = zeros(chnkr.npt*2,1);
-rhs_bc(1:2:end) = sin(chnkr.r(1,:)).*sin(chnkr.r(2,:));
-rhs_bc(2:2:end) = cos(chnkr.r(1,:)).*sin(chnkr.r(2,:)).*chnkr.n(1,:) ...
-          + sin(chnkr.r(1,:)).*cos(chnkr.r(2,:)).*chnkr.n(2,:) ; 
+rhs_bc(1:2:end) = -sin(chnkr.r(1,:)).*sin(chnkr.r(2,:));
+rhs_bc(2:2:end) = -cos(chnkr.r(1,:)).*sin(chnkr.r(2,:)).*chnkr.n(1,:) ...
+          - sin(chnkr.r(1,:)).*cos(chnkr.r(2,:)).*chnkr.n(2,:) ; 
 
 
 
@@ -133,17 +124,19 @@ t2 = toc(start1);
 fprintf('%5.2e s : time for kernel eval (for plotting)\n',t2)
 
 ref_u = (sin(S.r(1,:)).*sin(S.r(2,:))).';
-err = abs(u - ref_u(:)) / max(abs(u));
+err = abs(u + ref_u(:)) / max(abs(u));
 
 
 figure; clf
-scatter(S.r(1,:),S.r(2,:),8,u); 
+scatter(S.r(1,:),S.r(2,:),8,log10(err));
+title('error')
 colorbar
 
+return
 
 %%
 
-nx = 200;
+nx = 50;
 x = linspace(-1,1,nx);
 y = linspace(-1,1,nx);
 [x,y] = ndgrid(x,y); 
@@ -158,8 +151,8 @@ targinfo.n = zeros(size(targinfo.r));
 targinfo.n(3,:) = 1;
 
 
-A = flex2d.v2b_matgen_dir(S,zk,targinfo,1e-8);
-u = A*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
+A2 = flex2d.v2b_matgen_dir(S,zk,targinfo,1e-8);
+u = A2*sol(1:S.npts)+chunkerkerneval(chnkr, ikern,...
     sol(S.npts+1:end), targinfo.r(1:2,:));
 u = real(u);
 

@@ -1,9 +1,3 @@
-clear 
-clc
-
-run('/Users/yuguan/software/chunkie/startup.m')
-
-
 a = 1;
 b = 0.7;
 c = 1/pi;
@@ -17,10 +11,8 @@ nu = 0.3;
 
 % discretize domain
 
-nch = 4*4;
-cparams.ta = pi/nch;
-cparams.tb = 2*pi + cparams.ta;
-chnkr = chunkerfuncuni(@(t) ellipse(t),nch,cparams);
+cparams = []; cparams.maxchunklen = 4/max(abs(zk));
+chnkr = chunkerfunc(@(t) ellipse(t),cparams);
 chnkr = sort(chnkr);
 
 chnkr = makedatarows(chnkr,2);
@@ -113,7 +105,7 @@ clf
 t = tiledlayout('flow');
 
 nexttile
-zztarg = zeros(size(xxtarg));
+zztarg = NaN*zeros(size(xxtarg));
 zztarg(in) = utrue;
 h=pcolor(xxtarg,yytarg,real(zztarg));
 shading interp
@@ -129,7 +121,7 @@ title('$u^{true}$','Interpreter','latex','FontSize',12)
 
 
 nexttile
-zztarg = zeros(size(xxtarg));
+zztarg = NaN*zeros(size(xxtarg));
 zztarg(in) = usol;
 h=pcolor(xxtarg,yytarg,real(zztarg));
 shading interp
@@ -145,7 +137,7 @@ title('$u^{sol}$','Interpreter','latex','FontSize',12)
 
 
 nexttile
-zztarg = zeros(size(xxtarg));
+zztarg = NaN*zeros(size(xxtarg));
 zztarg(in) = log10(abs(usol-utrue)./abs(utrue));
 h=pcolor(xxtarg,yytarg,zztarg);
 shading interp

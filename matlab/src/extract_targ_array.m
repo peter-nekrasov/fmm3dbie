@@ -16,8 +16,8 @@ function [targs] = extract_targ_array(targinfo)
 %         and 12 if r,du,dv,and n are present in the struct
 %
     [~,ntarg] = size(targinfo.r);
-    if(isfield(targinfo,'du') || isfield(targinfo,'dv') || isfield(targinfo,'n'))
-       ndtarg = 12;
+    if(isfield(targinfo,'du') || isfield(targinfo,'dv') || isfield(targinfo,'n') || isfield(targinfo,'kappa') )
+       ndtarg = 13;
        targs = zeros(ndtarg,ntarg);
        targs(1:3,:) = targinfo.r;
        if isfield(targinfo,'du')
@@ -29,6 +29,9 @@ function [targs] = extract_targ_array(targinfo)
        if isfield(targinfo,'n')
            targs(10:12,:) = targinfo.n;
        end
+       if isfield(targinfo,'kappa')
+           targs(13,:) = targinfo.kappa;
+       end       
     else
        ndtarg = 3;
        targs = targinfo.r;

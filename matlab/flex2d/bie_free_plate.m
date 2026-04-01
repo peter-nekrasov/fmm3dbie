@@ -13,17 +13,7 @@ nu = 0.3;
 
 cparams = []; cparams.maxchunklen = 4/max(abs(zk));
 chnkr = chunkerfunc(@(t) ellipse(t),cparams);
-
 chnkr = sort(chnkr);
-chnkr = makedatarows(chnkr,2);
-
-kappa = signed_curvature(chnkr);
-kp = arclengthder(chnkr,kappa);
-kpp = arclengthder(chnkr,kp);
-
-chnkr.data(1,:,:) = kp;
-chnkr.data(2,:,:) = kpp;
-
 
 
 
@@ -40,7 +30,7 @@ chnkr.data(2,:,:) = kpp;
 % kernel 
 
 kern1 = @(s,t) chnk.flex2d.kern(zk, s, t, 's');
-kern2 = @(s,t) chnk.flex2d.kern(zk, s, t, 'supported_plate_bcs', nu);
+kern2 = @(s,t) chnk.flex2d.kern(zk, s, t, 'free_plate_bcs', nu);
 
 
 
@@ -57,33 +47,33 @@ rhs = kern2(srcinfo, chnkr);
 
 % build system matrix
 
-fkern1 =  @(s,t) chnk.flex2d.kern(zk, s, t, 'supported_plate_log',nu);           % build the desired kernel
-fkern2 =  @(s,t) chnk.flex2d.kern(zk, s, t, 'supported_plate_smooth',nu);           % build the desired kernel
-
-
-kappa = signed_curvature(chnkr);
-kappa = kappa(:);
+fkern1 =  @(s,t) chnk.flex2d.kern(zk, s, t, 'free_plate', nu);        % build the desired kernel
+double = @(s,t) chnk.lap2d.kern(s,t,'d');
+hilbert = @(s,t) chnk.lap2d.kern(s,t,'hilb');
 
 opts = [];
 opts.sing = 'log';
 
 opts2 = [];
-opts2.quad = 'native';
-opts2.sing = 'smooth';
+opts2.sing = 'pv';
 
+% building system matrix
 
 start = tic;
+sysmat1 = chunkermat(chnkr,fkern1, opts);
+D = chunkermat(chnkr, double, opts);
+H = chunkermat(chnkr, hilbert, opts2);     
 
+sysmat = zeros(2*chnkr.npt);
+sysmat(1:2:end,1:2:end) = sysmat1(1:4:end,1:2:end) - sysmat1(3:4:end,1:2:end)*H  + 2*((1+nu)/2)^2*D*D;
+sysmat(2:2:end,1:2:end) = sysmat1(2:4:end,1:2:end) - sysmat1(4:4:end,1:2:end)*H;
+sysmat(1:2:end,2:2:end) = sysmat1(1:4:end,2:2:end) + sysmat1(3:4:end,2:2:end);
+sysmat(2:2:end,2:2:end) = sysmat1(2:4:end,2:2:end) + sysmat1(4:4:end,2:2:end);
 
-M = chunkermat(chnkr,fkern1, opts);
-M2 = chunkermat(chnkr,fkern2, opts2);
+D = -[-1/2 + (1/8)*(1+nu).^2, 0; 0, 1/2];  % jump matrix 
+D = kron(eye(chnkr.npt), D);
 
-c0 = (nu - 1)*(nu + 3)*(2*nu - 1)/(2*(3 - nu));
-
-M(2:2:end,1:2:end) = M(2:2:end,1:2:end) + M2 - c0.*kappa(:).^2.*eye(chnkr.npt) + b/(2*a)*eye(chnkr.npt); % extra term shows up for the general problem
-M = M + 0.5*eye(2*chnkr.npt);
-
-sys =  M;
+sys =  D + sysmat;
 
 t1 = toc(start);
 fprintf('%5.2e s : time to assemble matrix\n',t1)
@@ -107,8 +97,13 @@ targets(2,:) = yytarg(:);
 in = chunkerinterior(chnkr,{xtarg,ytarg});
 targets = targets(:,in);
 
-ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'supported_plate_eval', nu);
-usol = chunkerkerneval(chnkr, ikern,sol, targets);
+dens_comb = zeros(3*chnkr.npt,1);
+dens_comb(1:3:end) = sol(1:2:end);
+dens_comb(2:3:end) = -H*sol(1:2:end);
+dens_comb(3:3:end) = sol(2:2:end);
+
+ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'free_plate_eval', nu);
+usol = chunkerkerneval(chnkr, ikern,dens_comb, targets);
 
 targinfo = [];
 targinfo.r = targets;
