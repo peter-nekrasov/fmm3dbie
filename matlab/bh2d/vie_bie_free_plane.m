@@ -1,26 +1,9 @@
-% genpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/')
-% addpath('/Users/squinn/chunkie/chunkie/')
+S = geometries.disk([],[],[4 4 4],6);
 
-% clear 
-% clc
-
-run('/Users/yuguan/software/chunkie/startup.m')
-run('/Users/yuguan/Dropbox/fmm3dbie/matlab/startup.m')
-addpath '/Users/yuguan/Dropbox/fmm3dbie/src'
-
-S = geometries.disk([],[],[4 4 4],8);
-
-% chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));
-nch = 4*4;
-cparams.ta = pi/nch;
-cparams.tb = 2*pi + cparams.ta;
-chnkr = chunkerfuncuni(@(t) ellipse(t),nch,cparams);
+cparams = []; cparams.maxchunklen = 0.5;
+chnkr = chunkerfunc(@(t) ellipse(t),cparams);
 chnkr = sort(chnkr);
 chnkr = makedatarows(chnkr,2);
-
-
-
 
 figure(1); clf
 plot(S,rand(S.npatches,1))
@@ -31,19 +14,11 @@ view(0,90)
 V = eval_gauss(S.r);
 
 zk = 0;
-nu = .1;
-
-
+nu = 0.3;
 
 %% calculating curvature info
 
 kappa = signed_curvature(chnkr);
-kp = arclengthder(chnkr,kappa);
-kpp = arclengthder(chnkr,kp);
-
-chnkr.data(1,:,:) = kp;
-chnkr.data(2,:,:) = kpp;
-
 
 
 
@@ -55,16 +30,12 @@ v2v = eye(S.npts) + V.*A;
 t1 = toc(start);
 fprintf('%5.2e s : time to assemble v2v matrix\n',t1)
 
-
-
-
-
 %% v2b
 
 targinfo=[];
 targinfo.r = [chnkr.r(:,:);0*chnkr.r(1,:)];
 targinfo.n = [chnkr.n(:,:);0*chnkr.n(1,:)];
-
+targinfo.kappa = kappa(:);
 
 dx = chnkr.d(1,:);
 dy = chnkr.d(2,:);
@@ -85,8 +56,6 @@ v2b(2:2:end,:) = v2b_free2;
 t1 = toc(start);
 fprintf('%5.2e s : time to assemble v2b matrix\n',t1)
 
-
-
 %% b2b
 fkern1 =  @(s,t) chnk.flex2d.kern(zk, s, t, 'free_plate', nu);        % build the desired kernel
 double = @(s,t) chnk.lap2d.kern(s,t,'d');
@@ -97,8 +66,6 @@ opts.sing = 'log';
 
 opts2 = [];
 opts2.sing = 'pv';
-
-
 
 start = tic;
 sysmat1 = chunkermat(chnkr,fkern1, opts);
@@ -187,7 +154,7 @@ ny = chnkr.n(2,:).';
 
 gsxx = -sinx.*siny; 
 gsxx = gsxx.';
-gsxy = cosx.*siny; 
+gsxy = cosx.*cosy; 
 gsxy = gsxy.';
 gsyy = -sinx.*siny; 
 gsyy = gsyy.';
@@ -228,27 +195,31 @@ t1 = toc(start);
 fprintf('%5.2e s : time for dense gmres\n',t1)    
 
 
-% %% postprocess 
-% 
-% 
-% ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'free_plate_eval', nu);
-% start1 = tic;
-% u = A*(sol(1:S.npts))+chunkerkerneval(chnkr, ikern,...
-%     sol(S.npts+1:end), S.r(1:2,:));
-% t2 = toc(start1);
-% fprintf('%5.2e s : time for kernel eval (for plotting)\n',t2)
-% 
-% 
-% ref_u = sin(S.r(1,:)).*sin(S.r(2,:));
-% err = abs(u - ref_u(:)) / max(abs(u));
-% 
-% 
-% 
-% %% ploting 
-% 
-% figure(2); clf
-% scatter(S.r(1,:),S.r(2,:),8,log10(err)); 
-% colorbar
+%% postprocess 
+
+dens_comb = zeros(3*chnkr.npt,1);
+dens_comb(1:3:end) = sol(S.npts+1:2:end);
+dens_comb(2:3:end) = -H*sol(S.npts+1:2:end);
+dens_comb(3:3:end) = sol(S.npts+2:2:end);
+
+ikern = @(s,t) chnk.flex2d.kern(zk, s, t, 'free_plate_eval', nu);
+start1 = tic;
+u = A*(sol(1:S.npts))+chunkerkerneval(chnkr, ikern,...
+    dens_comb, S.r(1:2,:));
+t2 = toc(start1);
+fprintf('%5.2e s : time for kernel eval (for plotting)\n',t2)
+
+
+ref_u = sin(S.r(1,:)).*sin(S.r(2,:));
+err = abs(u - ref_u(:)) / max(abs(u));
+
+
+
+%% ploting 
+
+figure(2); clf
+scatter(S.r(1,:),S.r(2,:),8,log10(err)); 
+colorbar
 
 
 %%

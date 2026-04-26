@@ -1,10 +1,7 @@
 S = geometries.disk([],[],[4 4 4],8);
 
-% chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));
-nch = 4*4;
-cparams.ta = pi/nch;
-cparams.tb = 2*pi + cparams.ta;
-chnkr = chunkerfuncuni(@(t) ellipse(t),nch,cparams);
+cparams = []; cparams.maxchunklen = 0.5;
+chnkr = chunkerfunc(@(t) ellipse(t),cparams);
 chnkr = sort(chnkr);
 
 figure(1); clf

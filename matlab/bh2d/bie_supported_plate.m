@@ -1,8 +1,3 @@
-clear 
-clc
-
-run('/Users/yuguan/software/chunkie/startup.m')
-
 
 zk = 0;
 nu = 0.3;
