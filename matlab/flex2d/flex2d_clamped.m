@@ -137,13 +137,14 @@ err = abs(u - ref_u(:)) / max(abs(u));
 
 
 figure; clf
-scatter(S.r(1,:),S.r(2,:),8,u); 
+scatter(S.r(1,:),S.r(2,:),8,err); 
 colorbar
 
+return
 
 %%
 
-nx = 200;
+nx = 50;
 x = linspace(-1,1,nx);
 y = linspace(-1,1,nx);
 [x,y] = ndgrid(x,y); 

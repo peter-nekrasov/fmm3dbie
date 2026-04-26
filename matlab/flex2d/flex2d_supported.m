@@ -32,7 +32,7 @@ view(0,90)
 
 V = eval_gauss(S.r);
 
-a = 1;
+a = -0.5;
 b = 0.7;
 c = 1/pi;
 nu = .3;
@@ -49,7 +49,7 @@ zk = [zk1,zk2];
 start = tic; 
 
 A = flex2d.v2v_matgen(S,zk,1e-10);
-l11 = eye(S.npts) + (V).*A;
+l11 = a*eye(S.npts) + (V).*A;
 
 t1 = toc(start);
 

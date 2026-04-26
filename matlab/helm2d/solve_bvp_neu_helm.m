@@ -1,4 +1,4 @@
-S = geometries.disk([],[],[4 4 4],8);
+S = geometries.disk([],[],[4 4 4],6);
 
 % chnkr = chunkerfunc(@(t) starfish(t,5,0,[0,0],0,1));
 nch = 4*4;
@@ -11,7 +11,7 @@ figure(1); clf
 plot(S,rand(S.npatches,1))
 hold on
 plot(chnkr,'x-')
-view(0,90)
+view(0,90) 
 
 V = eval_gauss(S.r);
 %rhs = eval_gauss(xs);
