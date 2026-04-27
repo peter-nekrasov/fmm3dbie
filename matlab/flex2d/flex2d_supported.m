@@ -2,6 +2,17 @@
 
 S = geometries.disk([],[],[4 4 4],6);
 
+a = 1;
+b = 0.7;
+c = 1/pi;
+
+nu = 0.3;
+
+zk1 = sqrt((- b + sqrt(b^2 + 4*a*c)) / (2*a));
+zk2 = sqrt((- b - sqrt(b^2 + 4*a*c)) / (2*a));
+
+zk = [zk1 zk2];
+
 cparams = []; cparams.maxchunklen = 4/max(abs(zk));
 chnkr = chunkerfunc(@(t) ellipse(t),cparams);
 chnkr = sort(chnkr);
